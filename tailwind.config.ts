@@ -1,66 +1,59 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-    content: [
-      "./src/**/*.{js,jsx,ts,tsx}",
-    ],
-    theme: {
-      extend: {
-        colors: {
-          // Primary Colors
-          primary: {
-            DEFAULT: '#059669', // Menu bar background (emerald green)
-            light: '#10B981',   // Lighter shade for borders/dividers
-            dark: '#047857',    // Darker shade for hover states
-          },
-          // Action Colors
-          action: {
-            DEFAULT: '#3B82F6', // Primary action buttons (bright blue)
-            hover: '#2563EB',   // Hover state for primary actions
-            light: '#93C5FD',   // Lighter blue for secondary elements
-            lightest: '#DBEAFE', // Very light blue for backgrounds/fills
-          },
-          // Accent Colors
-          accent: {
-            DEFAULT: '#F59E0B', // Accent color (amber) for important actions
-            hover: '#D97706',   // Hover state for accent
-            light: '#FCD34D',   // Light amber for highlights
-          },
-          // UI Element Colors
-          ui: {
-            DEFAULT: '#FFFFFF', // White background elements
-            secondary: '#F1F5F9', // Light gray background
-            border: '#E2E8F0',   // Border color for light elements
-            text: {
-              primary: '#0F172A',  // Primary text color (dark slate)
-              secondary: '#64748B', // Secondary text color (medium slate)
-              light: '#FFFFFF',    // Text on dark backgrounds
-            }
-          },
-          // Flowchart Specific Colors
-          flowchart: {
-            node: {
-              default: '#D1FAE5', // Default node background (light green)
-              selected: '#DBEAFE', // Selected node background (light blue)
-              border: {
-                default: '#059669', // Default node border (matching menu)
-                selected: '#3B82F6' // Selected node border (blue)
-              }
-            },
-            line: {
-              default: '#64748B', // Default connection line
-              selected: '#3B82F6', // Selected connection line
-              hover: '#0F172A'    // Hover state for connection lines
-            }
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        apptheme: {
+          light: '#99f6e4',
+          DEFAULT: '#14b8a6',
+          dark: '#0f766e',
+          darker: '#115e59',
+        },
+        "apptheme-green-flowchart": {
+          light: '#6ee7b7', 
+          DEFAULT: '#10b981',
+          dark: '#047857',
+          darker: '#064e3b',
+        },
+        grays: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+          950: '#020617',
+        },
+        status: {
+          success: '#10b981', // Modern green for checkmarks/success
+          error: '#ef4444',   // Modern red for errors/cancellation
+          warning: '#f59e0b', // Amber for warnings
+          info: '#3b82f6',    // Blue for information 
+        },
+        ui: {
+          DEFAULT: '#ffffff', // White background elements
+          secondary: '#f8fafc', // Very light gray background
+          border: '#e2e8f0',   // Light gray border
+          text: {
+            primary: '#111827',  // Very dark gray for primary text
+            secondary: '#4b5563', // Medium gray for secondary text
+            light: '#ffffff',    // White text on dark backgrounds
           }
-        },
-        // Add custom shadow variations
-        boxShadow: {
-          'menu': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
-          'node': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-          'node-selected': '0 0 0 2px #3B82F6, 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-        },
+        }
       },
+      boxShadow: {
+        'menu': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+        'node': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+        'node-selected': '0 0 0 2px #374151, 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+      }
     },
-    plugins: [],
+  },
+  plugins: [],
 }
-

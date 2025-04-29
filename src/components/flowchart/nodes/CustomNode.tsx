@@ -14,7 +14,8 @@ interface CustomNodeData {
   onResize?: (id: string, width: number, height: number) => void;
 }
 
-const primaryLightColor = ColorUtils.getColor('primary.light');
+// Update color references
+const handleColor = ColorUtils.appthemeGreenFlowchart.default;
 const DEFAULT_WIDTH = 160;
 const DEFAULT_HEIGHT = 80;
 const MAX_WIDTH = 400;
@@ -75,11 +76,11 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
   /* styles */
   const nodeClasses = `bg-white rounded-xl shadow-md flex items-start relative
     ${isEditing 
-      ? 'border-2 border-gray-400' // Primary border when editing
+      ? 'border-2' // Gray border when editing
       : selected
-        ? 'border-2 border-primary' // Solid border when selected but not editing
-        : 'border border-gray-200'   // Normal border when not selected or editing
-    } // todo: comeback here
+        ? 'border-2 border-apptheme-green-flowchart' // App theme border when selected but not editing
+        : 'border border-grays-200'   // Light border when not selected or editing
+    }
     ${isEditing ? 'nodrag' : ''}`;
 
   const handleBaseStyle = {
@@ -99,12 +100,12 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
           width: 10,
           height: 10,
           borderRadius: 6,
-          backgroundColor: '#059669',
+          backgroundColor: ColorUtils.appthemeGreenFlowchart.default,
           borderColor: 'white',
         }}
         lineStyle={{
           borderWidth: 2,
-          borderColor: '#059669',
+          borderColor: ColorUtils.appthemeGreenFlowchart.default,
           borderStyle: 'dashed'
         }}
         onResize={(_, { width, height }) => {
@@ -123,7 +124,7 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
           isConnectable={isConnectable && !isEditing}
           style={{
             ...handleBaseStyle,
-            backgroundColor: primaryLightColor
+            backgroundColor: handleColor
           }}
         />
         <Handle
@@ -133,7 +134,7 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
           isConnectable={isConnectable && !isEditing}
           style={{
             ...handleBaseStyle,
-            backgroundColor: primaryLightColor
+            backgroundColor: handleColor
           }}
         />
         <Handle
@@ -143,7 +144,7 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
           isConnectable={isConnectable && !isEditing}
           style={{
             ...handleBaseStyle,
-            backgroundColor: primaryLightColor
+            backgroundColor: handleColor
           }}
         />
         <Handle
@@ -153,7 +154,7 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
           isConnectable={isConnectable && !isEditing}
           style={{
             ...handleBaseStyle,
-            backgroundColor: primaryLightColor
+            backgroundColor: handleColor
           }}
         />
         <NodeContent
