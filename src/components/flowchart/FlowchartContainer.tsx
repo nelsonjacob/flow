@@ -8,9 +8,7 @@ interface FlowchartContainerProps {
   title?: string;
 }
 
-export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
-  title = 'My Flowchart',
-}) => {
+export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({}) => {
   const {
     nodes,
     edges,

@@ -114,65 +114,6 @@ export class ColorUtils {
       hover: this.getColor('grays.700') || '#334155',
     },
   };
-
-  /**
-   * Get color with opacity
-   * @param colorPath - Path to the color (e.g., "apptheme", "ui.text.primary")
-   * @param opacity - Opacity value between 0 and 1
-   * @returns RGBA color string
-   */
-  public static getColorWithOpacity(colorPath: string, opacity: number): string {
-    const hex = this.getColor(colorPath);
-    if (!hex) {
-      return `rgba(0, 0, 0, ${opacity})`;
-    }
-    
-    const rgb = this.hexToRgb(hex);
-    if (!rgb) {
-      return `rgba(0, 0, 0, ${opacity})`;
-    }
-    
-    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
-  }
-
-  /**
-   * Convert hex color to RGB
-   * @param hex - Hex color string
-   * @returns RGB object or null if invalid
-   */
-  private static hexToRgb(hex: string): { r: number, g: number, b: number } | null {
-    const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-    hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
-
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-      ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16),
-        }
-      : null;
-  }
-
-  /**
-   * Get contrast color (black or white) based on background
-   * @param colorPath - Path to the background color
-   * @returns Black or white color for optimal contrast
-   */
-  public static getContrastColor(colorPath: string): string {
-    const hex = this.getColor(colorPath);
-    if (!hex) {
-      return '#ffffff';
-    }
-    
-    const rgb = this.hexToRgb(hex);
-    if (!rgb) {
-      return '#ffffff';
-    }
-    
-    const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-    return brightness > 128 ? '#000000' : '#ffffff';
-  }
 }
 
 export default ColorUtils;
