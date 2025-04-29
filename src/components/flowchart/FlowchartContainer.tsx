@@ -1,12 +1,11 @@
 import React from 'react';
 import { ReactFlowProvider } from 'reactflow';
-import MenuBar from './MenuBar';
+import ControlPanel from './ControlPanel';
 import FlowchartEditor from './FlowchartEditor';
 import { useFlowchartState } from './hooks/useFlowchartState';
 
 interface FlowchartContainerProps {
   title?: string;
-  // You could pass initialNodes and initialEdges here if needed
 }
 
 export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
@@ -22,13 +21,12 @@ export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
     deleteSelectedNodes,
   } = useFlowchartState();
 
+  // Check if any nodes are selected
+  const hasSelection = nodes.some(node => node.selected);
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <MenuBar 
-        title={title}
-        onAddNode={addNode}
-        onDeleteNode={deleteSelectedNodes}
-      />
+      
       <div className="flex-1 overflow-hidden">
         <ReactFlowProvider>
           <FlowchartEditor
@@ -37,6 +35,11 @@ export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+          />
+          <ControlPanel
+            onAddNode={addNode}
+            onDeleteNode={deleteSelectedNodes}
+            hasSelection={hasSelection}
           />
         </ReactFlowProvider>
       </div>

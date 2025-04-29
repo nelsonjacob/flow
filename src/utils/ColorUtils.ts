@@ -8,12 +8,12 @@ export class ColorUtils {
 
   /**
    * Get a color hex value by its path
-   * @param colorPath - Path to the color (e.g., "primary", "primary.light", "ui.text.primary")
+   * @param colorPath - Path to the color (e.g., "apptheme", "apptheme.light", "ui.text.primary")
    * @returns The hex color value or undefined if not found
    */
   public static getColor(colorPath: string): string | undefined {
     const parts = colorPath.split('.');
-    let current: ColorValue = this.colors;
+    let current: any = this.colors;
 
     for (const part of parts) {
       if (typeof current !== 'object' || current === null) {
@@ -36,45 +36,64 @@ export class ColorUtils {
   }
 
   /**
-   * Primary color palette
+   * App theme color palette
    */
-  public static primary = {
-    default: this.getColor('primary') || '#059669',
-    light: this.getColor('primary.light') || '#10B981',
-    dark: this.getColor('primary.dark') || '#047857',
+  public static apptheme = {
+    default: this.getColor('apptheme') || '#14b8a6',
+    light: this.getColor('apptheme.light') || '#99f6e4',
+    dark: this.getColor('apptheme.dark') || '#0f766e',
+    darker: this.getColor('apptheme.darker') || '#115e59',
   };
 
   /**
-   * Action color palette
+   * App theme green flowchart color palette
    */
-  public static action = {
-    default: this.getColor('action') || '#3B82F6',
-    hover: this.getColor('action.hover') || '#2563EB',
-    light: this.getColor('action.light') || '#93C5FD',
-    lightest: this.getColor('action.lightest') || '#DBEAFE',
+  public static appthemeGreenFlowchart = {
+    default: this.getColor('apptheme-green-flowchart') || '#10b981',
+    light: this.getColor('apptheme-green-flowchart.light') || '#6ee7b7',
+    dark: this.getColor('apptheme-green-flowchart.dark') || '#047857',
+    darker: this.getColor('apptheme-green-flowchart.darker') || '#064e3b',
   };
 
   /**
-   * Accent color palette
+   * Status color palette
    */
-  public static accent = {
-    default: this.getColor('accent') || '#F59E0B',
-    hover: this.getColor('accent.hover') || '#D97706',
-    light: this.getColor('accent.light') || '#FCD34D',
+  public static status = {
+    success: this.getColor('status.success') || '#10b981',
+    error: this.getColor('status.error') || '#ef4444',
+    warning: this.getColor('status.warning') || '#f59e0b',
+    info: this.getColor('status.info') || '#3b82f6',
   };
 
   /**
    * UI element colors
    */
   public static ui = {
-    default: this.getColor('ui') || '#FFFFFF',
-    secondary: this.getColor('ui.secondary') || '#F1F5F9',
-    border: this.getColor('ui.border') || '#E2E8F0',
+    default: this.getColor('ui') || '#ffffff',
+    secondary: this.getColor('ui.secondary') || '#f8fafc',
+    border: this.getColor('ui.border') || '#e2e8f0',
     text: {
-      primary: this.getColor('ui.text.primary') || '#0F172A',
-      secondary: this.getColor('ui.text.secondary') || '#64748B',
-      light: this.getColor('ui.text.light') || '#FFFFFF',
+      primary: this.getColor('ui.text.primary') || '#111827',
+      secondary: this.getColor('ui.text.secondary') || '#4b5563',
+      light: this.getColor('ui.text.light') || '#ffffff',
     },
+  };
+
+  /**
+   * Gray scale colors
+   */
+  public static grays = {
+    50: this.getColor('grays.50') || '#f8fafc',
+    100: this.getColor('grays.100') || '#f1f5f9',
+    200: this.getColor('grays.200') || '#e2e8f0',
+    300: this.getColor('grays.300') || '#cbd5e1',
+    400: this.getColor('grays.400') || '#94a3b8',
+    500: this.getColor('grays.500') || '#64748b',
+    600: this.getColor('grays.600') || '#475569',
+    700: this.getColor('grays.700') || '#334155',
+    800: this.getColor('grays.800') || '#1e293b',
+    900: this.getColor('grays.900') || '#0f172a',
+    950: this.getColor('grays.950') || '#020617',
   };
 
   /**
@@ -82,19 +101,78 @@ export class ColorUtils {
    */
   public static flowchart = {
     node: {
-      default: this.getColor('flowchart.node.default') || '#D1FAE5',
-      selected: this.getColor('flowchart.node.selected') || '#DBEAFE',
+      default: this.getColor('apptheme-green-flowchart.light') || '#6ee7b7',
+      selected: this.getColor('apptheme-green-flowchart') || '#10b981',
       border: {
-        default: this.getColor('flowchart.node.border.default') || '#059669',
-        selected: this.getColor('flowchart.node.border.selected') || '#3B82F6',
+        default: this.getColor('grays.300') || '#cbd5e1',
+        selected: this.getColor('apptheme-green-flowchart.dark') || '#047857',
       },
     },
     line: {
-      default: this.getColor('flowchart.line.default') || '#64748B',
-      selected: this.getColor('flowchart.line.selected') || '#3B82F6',
-      hover: this.getColor('flowchart.line.hover') || '#0F172A',
+      default: this.getColor('grays.400') || '#94a3b8',
+      selected: this.getColor('grays.600') || '#475569',
+      hover: this.getColor('grays.700') || '#334155',
     },
   };
+
+  /**
+   * Get color with opacity
+   * @param colorPath - Path to the color (e.g., "apptheme", "ui.text.primary")
+   * @param opacity - Opacity value between 0 and 1
+   * @returns RGBA color string
+   */
+  public static getColorWithOpacity(colorPath: string, opacity: number): string {
+    const hex = this.getColor(colorPath);
+    if (!hex) {
+      return `rgba(0, 0, 0, ${opacity})`;
+    }
+    
+    const rgb = this.hexToRgb(hex);
+    if (!rgb) {
+      return `rgba(0, 0, 0, ${opacity})`;
+    }
+    
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
+  }
+
+  /**
+   * Convert hex color to RGB
+   * @param hex - Hex color string
+   * @returns RGB object or null if invalid
+   */
+  private static hexToRgb(hex: string): { r: number, g: number, b: number } | null {
+    const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
+  }
+
+  /**
+   * Get contrast color (black or white) based on background
+   * @param colorPath - Path to the background color
+   * @returns Black or white color for optimal contrast
+   */
+  public static getContrastColor(colorPath: string): string {
+    const hex = this.getColor(colorPath);
+    if (!hex) {
+      return '#ffffff';
+    }
+    
+    const rgb = this.hexToRgb(hex);
+    if (!rgb) {
+      return '#ffffff';
+    }
+    
+    const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+    return brightness > 128 ? '#000000' : '#ffffff';
+  }
 }
 
-export default ColorUtils; 
+export default ColorUtils;
