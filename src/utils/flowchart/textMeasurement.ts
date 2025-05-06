@@ -12,7 +12,7 @@ export const measureTextWidth = (text: string): number => {
       tempSpan.style.visibility = 'hidden';
       tempSpan.style.position = 'absolute';
       tempSpan.style.fontSize = '1.125rem'; // text-lg
-      tempSpan.style.fontFamily = 'Inter, system-ui, sans-serif'; // Match your font
+      tempSpan.style.fontFamily = 'Inter, system-ui, sans-serif';
       tempSpan.style.whiteSpace = 'pre'; // Preserve whitespace
       tempSpan.innerText = line || ' '; // Handle empty lines
       document.body.appendChild(tempSpan);

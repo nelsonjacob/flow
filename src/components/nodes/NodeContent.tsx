@@ -47,7 +47,7 @@ const NodeContent: React.FC<NodeContentProps> = ({
           onBlur={onBlur}
           onKeyDown={onKeyDown}
           placeholder=""
-          className="text-lg focus:outline-none bg-transparent nodrag w-full resize-none overflow-auto"
+          className="text-xl focus:outline-none bg-transparent nodrag w-full resize-none overflow-auto"
           style={{ 
             height: 'auto',
             maxHeight: 'calc(100% - 16px)'
@@ -55,9 +55,9 @@ const NodeContent: React.FC<NodeContentProps> = ({
           autoFocus
         />
       ) : (
-        <div className="text-lg text-gray-800 w-full min-h-8 whitespace-pre-wrap overflow-auto" 
+        <div className="text-xl text-gray-800 font-normal w-full min-h-8 whitespace-pre-wrap overflow-auto" 
              style={{ maxHeight: 'calc(100% - 16px)' }}>
-          {labelValue || <span className="text-gray-400 italic">Add a task!</span>}
+          {labelValue || <span className="text-gray-500 italic">Add a task!</span>}
         </div>
       )}
     </div>
