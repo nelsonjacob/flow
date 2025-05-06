@@ -1,5 +1,3 @@
-// src/utils/logger.ts
-// Logger utility with color-coded console output
 
 // Define log levels for better organization
 export enum LogLevel {

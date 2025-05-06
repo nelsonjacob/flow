@@ -3,8 +3,8 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import { NodeResizer } from '@reactflow/node-resizer';
 import '@reactflow/node-resizer/dist/style.css';
 import NodeContent from './NodeContent';
-import { useNodeDimensions } from '../hooks/useNodeDimensions';
-import ColorUtils from '../../../utils/ColorUtils';
+import { useNodeDimensions } from '../../hooks/useNodeDimensions';
+import ColorUtils from '../../utils/ui/ColorUtils';
 
 interface CustomNodeData {
   label: string;

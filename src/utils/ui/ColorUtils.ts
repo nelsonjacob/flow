@@ -1,4 +1,4 @@
-import tailwindConfig from '../../tailwind.config.ts';
+import tailwindConfig from '../../../tailwind.config.ts';
 
 /**
  * Utility class for accessing color values from the Tailwind theme
