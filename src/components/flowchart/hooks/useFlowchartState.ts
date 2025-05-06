@@ -50,6 +50,15 @@ export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[
     }));
     saveToStorage(STORAGE_KEY_NODES, nodesToStore);
   }, [nodes, saveToStorage]);
+
+
+  useEffect(() => {
+    const edgesToStore = edges.map(edge => ({
+      ...edge,
+      selected: false,
+    }));
+    saveToStorage(STORAGE_KEY_EDGES, edgesToStore);
+  }, [edges, saveToStorage]);
   
   // Save title to localStorage when it changes
   useEffect(() => {
