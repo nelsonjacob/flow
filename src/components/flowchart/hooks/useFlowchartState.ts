@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Node,
   Edge,
@@ -14,18 +14,21 @@ import { useNodeCallbacks } from './useNodeCallbacks';
 // Storage keys
 const STORAGE_KEY_NODES = 'flowchart-nodes';
 const STORAGE_KEY_EDGES = 'flowchart-edges';
+const STORAGE_KEY_TITLE = 'flowchart-title';
 
-export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[] = []) => {
+export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[] = [], initialTitle: string = 'My Flowchart') => {
   const { loadFromStorage, saveToStorage } = useLocalStorage();
   const { isValidConnection } = useConnectionConfig();
   
   // Load initial nodes and edges
   const loadedNodes = loadFromStorage(STORAGE_KEY_NODES, initialNodes);
   const loadedEdges = loadFromStorage(STORAGE_KEY_EDGES, initialEdges);
+  const loadedTitle = loadFromStorage(STORAGE_KEY_TITLE, initialTitle);
   
   // Initialize states with the loaded data
   const [nodes, setNodes, onNodesChange] = useNodesState(loadedNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(loadedEdges);
+  const [title, setTitle] = useState(loadedTitle);
   
   // Get node callback functions
   const { onLabelChange, onNodeResize, attachCallbacksToNodes } = useNodeCallbacks(setNodes);
@@ -48,11 +51,15 @@ export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[
     saveToStorage(STORAGE_KEY_NODES, nodesToStore);
   }, [nodes, saveToStorage]);
   
-  // Save edges to localStorage when they change
+  // Save title to localStorage when it changes
   useEffect(() => {
-    saveToStorage(STORAGE_KEY_EDGES, edges);
-  }, [edges, saveToStorage]);
+    saveToStorage(STORAGE_KEY_TITLE, title);
+  }, [title, saveToStorage]);
   
+  // Title update handler
+  const updateTitle = useCallback((newTitle: string) => {
+    setTitle(newTitle);
+  }, []);
   // Connection handling
   const onConnect = useCallback(
     (connection: Connection) => {
@@ -109,6 +116,7 @@ export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[
   return {
     nodes,
     edges,
+    title,
     setNodes,
     setEdges,
     onNodesChange,
@@ -116,5 +124,6 @@ export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[
     onConnect,
     addNode,
     deleteSelectedNodes,
+    updateTitle,
   };
 };
