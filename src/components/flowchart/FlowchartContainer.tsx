@@ -42,7 +42,7 @@ export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
             onDeleteNode={deleteSelectedNodes}
             hasSelection={hasSelection}
           />
-          <div className="absolute top-3 right-3 z-10">
+          <div className="absolute top-5 left-5 z-10">
             <EditableTitle 
               title={title} 
               onTitleChange={updateTitle}
