@@ -53,7 +53,7 @@ export const useNodeCallbacks = (setNodes: React.Dispatch<SetStateAction<Node[]>
             data: {
               ...node.data,
               completed,
-              completedAt: completed ? new Date() : undefined,
+              completedAt: completed ? Date.now() : undefined,
             },
           };
         }

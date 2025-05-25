@@ -79,7 +79,30 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
 
   const handleToggleComplete = useCallback(() => {
     if (data.onToggleComplete) {
-      data.onToggleComplete(id, !data.completed);
+      const newCompletedState = !data.completed;
+
+      const now = Date.now();
+
+      const CELEBRATION_COOLDOWN = 30000; // 30 seconds
+
+
+
+      if (newCompletedState) {
+        const lastCompletedTime = data.completedAt ? new Date(data.completedAt).getTime() : 0;
+        const shouldCelebrate = now - lastCompletedTime > CELEBRATION_COOLDOWN;
+
+
+      }
+      data.onToggleComplete(id, newCompletedState);
+
+
+      
+
+
+
+
+      // So, if the node is being updated 
+
     }
   }, [data.onToggleComplete, id, data.completed]);
 

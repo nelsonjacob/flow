@@ -1,5 +1,5 @@
 import { CheckIcon } from '@heroicons/react/24/outline';
-
+import React, {useState} from 'react';
 
 interface CompletionCheckboxProps {
     completed: boolean;
@@ -8,6 +8,7 @@ interface CompletionCheckboxProps {
     onToggleComplete: () => void;
 
 };
+
 
 
 const CompletionCheckbox: React.FC<CompletionCheckboxProps> = ({
@@ -19,7 +20,7 @@ const CompletionCheckbox: React.FC<CompletionCheckboxProps> = ({
     if (!shouldShowNode) {
         return null;
     }
-    
+
     return (
         <div className="absolute top-2 right-2 z-10">
             <button
