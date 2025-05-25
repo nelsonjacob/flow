@@ -7,6 +7,8 @@ import {
   addEdge,
   Connection,
 } from 'reactflow';
+
+import { useReactFlow } from 'reactflow';
 import { v4 as uuidv4 } from 'uuid';
 import { useConnectionConfig } from './useConnectionConfig';
 import { useLocalStorage } from './useLocalStorage';
@@ -19,6 +21,7 @@ const STORAGE_KEY_TITLE = 'flowchart-title';
 export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[] = [], initialTitle: string = 'My Flowchart') => {
   const { loadFromStorage, saveToStorage } = useLocalStorage();
   const { isValidConnection } = useConnectionConfig();
+  const { getViewport } = useReactFlow();
   
   // Load initial nodes and edges
   const loadedNodes = loadFromStorage(STORAGE_KEY_NODES, initialNodes);
@@ -91,6 +94,28 @@ export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[
 
   // Node operations
   const addNode = useCallback(() => {
+    const viewPort = getViewport();
+
+    const flowElement = document.querySelector('.react-flow');
+    const rect = flowElement?.getBoundingClientRect();
+
+
+    var newNodePosition: { x: number; y: number } = {x: 100 + Math.random() * 100, y: 100 + Math.random() * 100 };
+
+    if (rect && viewPort) {
+      const screenCenterX = rect.width / 2;
+      const screenCenterY = rect.height * 0.4; // 40% from top instead of 50%
+      
+      // Transform screen coordinates to flow coordinates
+      const flowX = (screenCenterX - viewPort.x) / viewPort.zoom;
+      const flowY = (screenCenterY - viewPort.y) / viewPort.zoom;
+
+      newNodePosition = {
+        x: flowX,
+        y: flowY
+      };
+    }
+    
     const newNode: Node = {
       id: uuidv4(),
       type: 'customNode',
@@ -102,8 +127,8 @@ export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[
         height: 80,
       },
       position: { 
-        x: 100 + Math.random() * 100, 
-        y: 100 + Math.random() * 100 
+        x: newNodePosition.x,
+        y: newNodePosition.y
       },
     };
     
