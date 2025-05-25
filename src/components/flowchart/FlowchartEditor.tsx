@@ -10,8 +10,8 @@ import ReactFlow, {
   ConnectionMode,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import CustomNode from './nodes/CustomNode';
-import { useConnectionConfig } from './hooks/useConnectionConfig';
+import CustomNode from '../nodes/CustomNode';
+import { useConnectionConfig } from '../../hooks/useConnectionConfig';
 
 interface FlowchartEditorProps {
   nodes: Node[];

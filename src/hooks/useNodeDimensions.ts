@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { measureTextWidth } from '../../../utils/textMeasurement';
+import { measureTextWidth } from '../utils/flowchart/textMeasurement';
 
 interface NodeDimensionsOptions {
   defaultWidth: number;

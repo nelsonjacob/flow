@@ -1,9 +1,9 @@
 import React from 'react';
 import { ReactFlowProvider } from 'reactflow';
-import ControlPanel from './ControlPanel';
-import EditableTitle from './EditableTitle';
+import ControlPanel from '../common/ControlPanel';
+import EditableTitle from '../common/EditableTitle';
 import FlowchartEditor from './FlowchartEditor';
-import { useFlowchartState } from './hooks/useFlowchartState';
+import { useFlowchartState } from '../../hooks/useFlowchartState';
 
 interface FlowchartContainerProps {
   title?: string;
