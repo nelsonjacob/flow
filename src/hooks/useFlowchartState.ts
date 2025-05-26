@@ -40,7 +40,7 @@ export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[
   // Attach callbacks to nodes
   useEffect(() => {
     attachCallbacksToNodes();
-  }, [attachCallbacksToNodes]);
+  }, [attachCallbacksToNodes, nodes.length]);
   
   // Save nodes to localStorage when they change
   useEffect(() => {
