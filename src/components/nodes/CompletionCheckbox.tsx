@@ -1,5 +1,5 @@
 import { CheckIcon } from '@heroicons/react/24/outline';
-import React, {useState} from 'react';
+import React from 'react';
 
 interface CompletionCheckboxProps {
     completed: boolean;

@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useConnectionConfig } from './useConnectionConfig';
 import { useLocalStorage } from './useLocalStorage';
 import { useNodeCallbacks } from './useNodeCallbacks';
-import { on } from 'events';
+
 // Storage keys
 const STORAGE_KEY_NODES = 'flowchart-nodes';
 const STORAGE_KEY_EDGES = 'flowchart-edges';

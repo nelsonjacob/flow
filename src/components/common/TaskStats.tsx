@@ -6,7 +6,6 @@ interface TaskStatsProps {
 }
 
 const TaskStats: React.FC<TaskStatsProps> = ({ totalTasks, completedTasks }) => {
-  const inProgressTasks = totalTasks - completedTasks;
   const completionPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
   
   return (
