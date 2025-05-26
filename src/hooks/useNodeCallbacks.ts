@@ -42,6 +42,25 @@ export const useNodeCallbacks = (setNodes: React.Dispatch<SetStateAction<Node[]>
       })
     );
   }, [setNodes]);
+
+  const onToggleComplete = useCallback((nodeId: string, completed: boolean) => {
+    setNodes((nds: Node[]) =>
+      nds.map((node: Node) => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              completed,
+              completedAt: completed ? Date.now() : undefined,
+            },
+          };
+        }
+        return node;
+      })
+    );
+  }, [setNodes]);
+
   
   const attachCallbacksToNodes = useCallback(() => {
     setNodes((nds: Node[]) =>
@@ -51,15 +70,17 @@ export const useNodeCallbacks = (setNodes: React.Dispatch<SetStateAction<Node[]>
           ...node.data,
           onLabelChange,
           onResize: onNodeResize,
+          onToggleComplete
         }
       }))
     );
-  }, [setNodes, onLabelChange, onNodeResize]);
+  }, [setNodes, onLabelChange, onNodeResize, onToggleComplete]);
 
   return {
     onLabelChange,
     onNodeResize,
     attachCallbacksToNodes,
+    onToggleComplete
   };
 };
 

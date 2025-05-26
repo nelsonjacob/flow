@@ -2,16 +2,20 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { NodeResizer } from '@reactflow/node-resizer';
 import '@reactflow/node-resizer/dist/style.css';
+import CompletionCheckbox from './CompletionCheckbox';
 import NodeContent from './NodeContent';
 import { useNodeDimensions } from '../../hooks/useNodeDimensions';
 import ColorUtils from '../../utils/ui/ColorUtils';
 
 interface CustomNodeData {
   label: string;
+  completed?: boolean;
+  completedAt?: Date;
   width?: number;
   height?: number;
   onLabelChange?: (id: string, newLabel: string) => void;
   onResize?: (id: string, width: number, height: number) => void;
+  onToggleComplete?: (id: string, completed: boolean) => void;
 }
 
 // Update color references
@@ -72,6 +76,12 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
       handleBlur();
     }
   };
+
+  const handleToggleComplete = useCallback(() => {
+    if (data.onToggleComplete) {
+      data.onToggleComplete(id, !data.completed);
+    }
+  }, [data.onToggleComplete, id, data.completed]);
 
   /* styles */
   const nodeClasses = `bg-white rounded-xl shadow-md flex items-start relative
@@ -157,6 +167,11 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
             backgroundColor: handleColor
           }}
         />
+        <CompletionCheckbox
+            completed={data.completed || false}
+            isNodeHovered={selected}
+            onToggleComplete={handleToggleComplete}
+          />
         <NodeContent
           isEditing={isEditing}
           labelValue={labelValue}

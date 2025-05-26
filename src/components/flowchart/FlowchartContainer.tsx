@@ -2,6 +2,7 @@ import React from 'react';
 import { ReactFlowProvider } from 'reactflow';
 import ControlPanel from '../common/ControlPanel';
 import EditableTitle from '../common/EditableTitle';
+import TaskStats from '../common/TaskStats';
 import FlowchartEditor from './FlowchartEditor';
 import { useFlowchartState } from '../../hooks/useFlowchartState';
 
@@ -46,6 +47,12 @@ export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
             <EditableTitle 
               title={title} 
               onTitleChange={updateTitle}
+            />
+          </div>
+          <div className="absolute top-5 right-5 z-10">
+            <TaskStats 
+              totalTasks={nodes.length} 
+              completedTasks={nodes.filter(node => node.data.completed).length} 
             />
           </div>
         </ReactFlowProvider>

@@ -75,7 +75,7 @@ const EditableTitle: React.FC<EditableTitleProps> = ({
             onChange={handleInputChange}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
-            className="bg-transparent w-full text-sm font-medium nodrag focus:outline-none py-0.5"
+            className="bg-transparent w-full text-xl font-semibold tracking-tight nodrag focus:outline-none py-0.5"
             style={{ minWidth: '150px' }}
             placeholder={DEFAULT_TITLE}
           />
@@ -86,7 +86,7 @@ const EditableTitle: React.FC<EditableTitleProps> = ({
           className="flex items-center gap-2 cursor-pointer" 
           onClick={handleStartEditing}
         >
-          <span className="text-sm font-medium text-gray-700 truncate">
+          <span className="text-xl font-semibold tracking-tight text-gray-800 truncate">
             {titleValue || DEFAULT_TITLE}
           </span>
           <PencilIcon className="w-3.5 h-3.5 text-gray-400 hover:text-apptheme-green-flowchart transition-colors" />
