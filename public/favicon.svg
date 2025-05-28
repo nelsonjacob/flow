@@ -1,13 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
-  <!-- Background -->
-  <rect width="64" height="64" rx="12" fill="#1F2937"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Larger Purple Nodes -->
+  <rect x="24" y="8" width="16" height="16" rx="3" fill="#8B5CF6"/> <!-- Top node -->
+  <rect x="10" y="36" width="16" height="16" rx="3" fill="#8B5CF6"/> <!-- Left child -->
+  <rect x="38" y="36" width="16" height="16" rx="3" fill="#8B5CF6"/> <!-- Right child -->
 
-  <!-- Flowchart nodes (all dark green now) -->
-  <rect x="24" y="14" width="16" height="12" rx="2" fill="#047857" stroke="#047857" stroke-width="0.5"/> <!-- Top rectangle -->
-  <rect x="12" y="36" width="16" height="12" rx="2" fill="#047857"/> <!-- Bottom left -->
-  <rect x="36" y="36" width="16" height="12" rx="2" fill="#047857"/> <!-- Bottom right -->
-
-  <!-- Curved flow arrows -->
-  <path d="M32 26 C28 32, 20 32, 20 36" stroke="#9CA3AF" stroke-width="1" fill="none" stroke-linecap="round"/>
-  <path d="M32 26 C36 32, 44 32, 44 36" stroke="#9CA3AF" stroke-width="1" fill="none" stroke-linecap="round"/>
+  <!-- Bezier Curves in Bright Green -->
+  <path d="M32 24 C26 32, 18 32, 18 36" stroke="#10B981" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M32 24 C38 32, 46 32, 46 36" stroke="#10B981" stroke-width="1.5" fill="none" stroke-linecap="round"/>
 </svg>
