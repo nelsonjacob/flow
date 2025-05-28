@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { NodeResizer } from '@reactflow/node-resizer';
 import '@reactflow/node-resizer/dist/style.css';
 import CompletionCheckbox from './CompletionCheckbox';
 import NodeContent from './NodeContent';
 import { useNodeDimensions } from '../../hooks/useNodeDimensions';
 import ColorUtils from '../../utils/ui/ColorUtils';
+import { useHandleLogic } from '../../hooks/useHandleLogic';
 
 interface CustomNodeData {
   label: string;
@@ -13,24 +14,30 @@ interface CustomNodeData {
   completedAt?: Date;
   width?: number;
   height?: number;
+  isDragging?: boolean;
   onLabelChange?: (id: string, newLabel: string) => void;
   onResize?: (id: string, width: number, height: number) => void;
   onToggleComplete?: (id: string, completed: boolean) => void;
 }
 
-// Update color references
-const handleColor = ColorUtils.appthemeGreenFlowchart.default;
 const DEFAULT_WIDTH = 160;
 const DEFAULT_HEIGHT = 80;
 const MAX_WIDTH = 400;
 const MAX_HEIGHT = 300;
 const BUFFER_SPACE = 60;
 
+const HANDLE_POSITIONS = [
+  { type: 'source', position: Position.Top, id: 'top-center' },
+  { type: 'source', position: Position.Right, id: 'right-center' },
+  { type: 'source', position: Position.Bottom, id: 'bottom-center' },
+  { type: 'source', position: Position.Left, id: 'left-center' }
+];
+
 const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, id, selected }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [labelValue, setLabelValue] = useState(data.label || '');
   
-  // Update labelValue when data.label changes
   useEffect(() => {
     setLabelValue(data.label || '');
   }, [data.label]);
@@ -54,8 +61,23 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
     onResize: data.onResize
   });
   
+  // Extract all handle logic to custom hook
+  const {
+    getHandleStyle,
+    handleHandleMouseEnter,
+    handleHandleMouseLeave,
+    handleHandleMouseDown,
+    handleHandleMouseUp
+  } = useHandleLogic({
+    id,
+    isHovered,
+    isEditing,
+    isDragging: data.isDragging || false
+  });
 
-  /* handle functions */
+  // Node event handlers
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
   const handleDoubleClick = () => setIsEditing(true);
 
   const handleChange = (newValue: string) => {
@@ -70,7 +92,6 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
   }, [id, labelValue, data, finalizeSize]);
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    /* Needed to add the new line when shift + enter is pressed */
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleBlur();
@@ -83,20 +104,14 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
     }
   }, [data.onToggleComplete, id, data.completed]);
 
-  /* styles */
   const nodeClasses = `bg-white rounded-xl shadow-md flex items-start relative
     ${isEditing 
-      ? 'border-2' // Gray border when editing
+      ? 'border-2' 
       : selected
-        ? 'border-2 border-apptheme-green-flowchart' // App theme border when selected but not editing
-        : 'border border-grays-200'   // Light border when not selected or editing
+        ? 'border-2 border-apptheme-green-flowchart' 
+        : 'border border-grays-200'   
     }
     ${isEditing ? 'nodrag' : ''}`;
-
-  const handleBaseStyle = {
-    width: '12px',
-    height: '12px'
-  };
 
   return (
     <>
@@ -126,52 +141,33 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
       <div 
         className={nodeClasses}
         style={{ width: `${nodeWidth}px`, height: `${nodeHeight}px` }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
-        <Handle
-          type="source"
-          position={Position.Top}
-          id={`${id}-top-center`}
-          isConnectable={isConnectable && !isEditing}
-          style={{
-            ...handleBaseStyle,
-            backgroundColor: handleColor
-          }}
-        />
-        <Handle
-          type="source"
-          position={Position.Right}
-          id={`${id}-right-center`}
-          isConnectable={isConnectable && !isEditing}
-          style={{
-            ...handleBaseStyle,
-            backgroundColor: handleColor
-          }}
-        />
-        <Handle
-          type="source"
-          position={Position.Bottom}
-          id={`${id}-bottom-center`}
-          isConnectable={isConnectable && !isEditing}
-          style={{
-            ...handleBaseStyle,
-            backgroundColor: handleColor
-          }}
-        />
-        <Handle
-          type="source"
-          position={Position.Left}
-          id={`${id}-left-center`}
-          isConnectable={isConnectable && !isEditing}
-          style={{
-            ...handleBaseStyle,
-            backgroundColor: handleColor
-          }}
-        />
+        {/* Render handles dynamically */}
+        {HANDLE_POSITIONS.map(({ type, position, id: handleId }) => {
+          const fullHandleId = `${id}-${handleId}`;
+          return (
+            <Handle
+              key={fullHandleId}
+              type={type as any}
+              position={position}
+              id={fullHandleId}
+              isConnectable={isConnectable && !isEditing}
+              style={getHandleStyle(fullHandleId)}
+              onMouseEnter={() => handleHandleMouseEnter(fullHandleId)}
+              onMouseLeave={handleHandleMouseLeave}
+              onMouseDown={() => handleHandleMouseDown(fullHandleId)}
+              onMouseUp={handleHandleMouseUp}
+            />
+          );
+        })}
+
         <CompletionCheckbox
-            completed={data.completed || false}
-            isNodeHovered={selected}
-            onToggleComplete={handleToggleComplete}
-          />
+          completed={data.completed || false}
+          isNodeHovered={selected}
+          onToggleComplete={handleToggleComplete}
+        />
         <NodeContent
           isEditing={isEditing}
           labelValue={labelValue}
