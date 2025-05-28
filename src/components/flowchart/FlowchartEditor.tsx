@@ -37,25 +37,43 @@ export const FlowchartEditor: React.FC<FlowchartEditorProps> = ({
   const [hoveredEdge, setHoveredEdge] = useState<string | null>(null);
   const [clickedEdge, setClickedEdge] = useState<string | null>(null);
 
-  // Style edges based on hover and click states
+  // Create base edge styles once
+  const baseEdgeStyle = useMemo(() => ({
+    strokeWidth: 2,
+    stroke: ColorUtils.flowchart.line.default,
+    transition: 'all 0.2s ease-in-out'
+  }), []);
+
+  const hoveredEdgeStyle = useMemo(() => ({
+    strokeWidth: 2,
+    stroke: ColorUtils.flowchart.line.hover,
+    strokeDasharray: '8,4',
+    transition: 'all 0.2s ease-in-out'
+  }), []);
+
+  const clickedEdgeStyle = useMemo(() => ({
+    strokeWidth: 2,
+    stroke: ColorUtils.status.error,
+    strokeDasharray: '8,4',
+    transition: 'all 0.2s ease-in-out'
+  }), []);
+
+  // Only apply styles to edges that need them - much more efficient
   const styledEdges = useMemo(() => {
-    return edges.map(edge => ({
-      ...edge,
-      style: {
-        ...edge.style,
-        strokeWidth: 2,
-        stroke: clickedEdge === edge.id 
-          ? ColorUtils.status.error // Red when clicked for deletion
-          : hoveredEdge === edge.id 
-            ? ColorUtils.flowchart.line.hover // Hovered state
-            : ColorUtils.flowchart.line.default, // Default state
-        strokeDasharray: hoveredEdge === edge.id || clickedEdge === edge.id 
-          ? '8,4' 
-          : 'none',
-        transition: 'all 0.2s ease-in-out'
+    if (!hoveredEdge && !clickedEdge) {
+      return edges; // Return original edges if no special styling needed
+    }
+    
+    return edges.map(edge => {
+      if (clickedEdge === edge.id) {
+        return { ...edge, style: { ...edge.style, ...clickedEdgeStyle } };
       }
-    }));
-  }, [edges, hoveredEdge, clickedEdge]);
+      if (hoveredEdge === edge.id) {
+        return { ...edge, style: { ...edge.style, ...hoveredEdgeStyle } };
+      }
+      return edge; // Return unchanged edge
+    });
+  }, [edges, hoveredEdge, clickedEdge, hoveredEdgeStyle, clickedEdgeStyle]);
 
   const onEdgeMouseEnter = useCallback((_: React.MouseEvent, edge: Edge) => {
     setHoveredEdge(edge.id);
@@ -102,10 +120,7 @@ export const FlowchartEditor: React.FC<FlowchartEditorProps> = ({
       connectionMode={ConnectionMode.Loose}
       defaultEdgeOptions={{
         type: 'default',
-        style: { 
-          stroke: ColorUtils.flowchart.line.default, 
-          strokeWidth: 2 
-        },
+        style: baseEdgeStyle,
       }}
       fitViewOptions={{
         padding: 0.2,
