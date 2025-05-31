@@ -31,8 +31,7 @@ interface UseHandleLogicReturn {
   isHandleVisible: (handleId: string) => boolean;
 }
 
-export const useHandleLogic = ({ 
-  id, 
+export const useHandleLogic = ({
   isHovered, 
   isEditing, 
   isDragging 
