@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Larger Purple Nodes -->
+  <rect x="24" y="8" width="16" height="16" rx="3" fill="#8B5CF6"/> <!-- Top node -->
+  <rect x="10" y="36" width="16" height="16" rx="3" fill="#8B5CF6"/> <!-- Left child -->
+  <rect x="38" y="36" width="16" height="16" rx="3" fill="#8B5CF6"/> <!-- Right child -->
+
+  <!-- Bezier Curves in Bright Green -->
+  <path d="M32 24 C26 32, 18 32, 18 36" stroke="#10B981" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M32 24 C38 32, 46 32, 46 36" stroke="#10B981" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>
