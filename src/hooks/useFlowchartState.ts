@@ -150,6 +150,15 @@ export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[
     ));
   }, [nodes, setNodes, setEdges]);
 
+  const clearChart = useCallback(() => {
+    setNodes([]);
+    setEdges([]);
+    setTitle('Flowchart');
+    saveToStorage(STORAGE_KEY_NODES, []);
+    saveToStorage(STORAGE_KEY_EDGES, []);
+    saveToStorage(STORAGE_KEY_TITLE, 'Flowchart');
+  }, [setNodes, setEdges, setTitle, saveToStorage]);
+
   return {
     nodes,
     edges,
@@ -160,6 +169,7 @@ export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[
     onEdgesChange,
     onConnect,
     addNode,
+    clearChart,
     deleteSelectedNodes,
     updateTitle,
   };
