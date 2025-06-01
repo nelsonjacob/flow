@@ -1,30 +1,33 @@
 import React from 'react';
 
+type ButtonVariant = 'default' | 'remove' | 'help';
 interface ControlButtonProps {
   onClick: () => void;
   icon: React.ReactNode;
+  variant?: ButtonVariant;
 }
 
-/**
- * A reusable control button component for flowchart operations
- */
 const ControlButton: React.FC<ControlButtonProps> = ({
   onClick,
-  icon
+  icon,
+  variant = 'default'
 }) => {
-  // Base classes that are always applied
   const baseClasses = [
     'flex items-center justify-center',
     'w-10 h-10 rounded-lg',
     'transition-all duration-200 ease-in-out'
   ];
-
-  // Classes that depend on props
+  
   const stateClasses = 'hover:scale-105 active:scale-95';
-
-  // Style classes (primary vs secondary)
-  const styleClasses = "bg-white text-grays-700 border border-grays-200 hover:border-apptheme-green-flowchart";
-
+  
+  const variantStyles: Record<ButtonVariant, string> = {
+    default: 'hover:border-apptheme-green-flowchart hover:bg-green-50 hover:text-apptheme-green-flowchart',
+    remove: 'hover:border-status-error hover:bg-red-50 hover:text-status-error',
+    help: 'hover:border-status-info hover:bg-blue-50 hover:text-status-info'
+  };
+  
+  const styleClasses = `bg-white text-grays-700 border border-grays-200 ${variantStyles[variant]}`;
+  
   return (
     <button
       onClick={onClick}
@@ -38,4 +41,4 @@ const ControlButton: React.FC<ControlButtonProps> = ({
   );
 };
 
-export default ControlButton; 
+export default ControlButton;
