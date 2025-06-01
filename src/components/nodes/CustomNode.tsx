@@ -48,8 +48,7 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
     wasManuallyResized,
     textareaRef,
     autoResizeNode,
-    handleManualResize,
-    finalizeSize
+    handleManualResize
   } = useNodeDimensions(id, labelValue, {
     defaultWidth: DEFAULT_WIDTH,
     defaultHeight: DEFAULT_HEIGHT,
@@ -88,8 +87,7 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
   const handleBlur = useCallback(() => {
     setIsEditing(false);
     if (data.onLabelChange) data.onLabelChange(id, labelValue);
-    finalizeSize(labelValue);
-  }, [id, labelValue, data, finalizeSize]);
+  }, [id, labelValue, data]);
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {

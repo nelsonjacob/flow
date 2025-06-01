@@ -10,7 +10,7 @@ function App() {
   return (
     <ReactFlowProvider>
       <div className="basic-layout">
-        <FlowchartContainer title="Taskmapper" />
+        <FlowchartContainer title="Flowchart" />
       </div>
     </ReactFlowProvider>
   )
