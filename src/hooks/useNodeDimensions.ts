@@ -126,46 +126,12 @@ export const useNodeDimensions = (id: string, text: string, options: NodeDimensi
     }
   };
   
-  // Apply final size adjustments
-  const finalizeSize = (text: string) => {
-    if (textareaRef.current && onResize) {
-      // Calculate size based on content, but respect min/max constraints
-      const finalWidth = Math.min(Math.max(measureTextWidth(text) + bufferSpace, defaultWidth), maxWidth);
-      const finalHeight = Math.min(Math.max(textareaRef.current.scrollHeight + 24, defaultHeight), maxHeight);
-      
-      // Check if text was deleted
-      const isDeleting = text.length < prevTextLengthRef.current;
-      prevTextLengthRef.current = text.length;
-      
-      if (isDeleting) {
-        // When deleting text, allow node to shrink
-        const newWidth = Math.max(finalWidth, defaultWidth);
-        const newHeight = Math.max(finalHeight, defaultHeight);
-        
-        setNodeWidth(newWidth);
-        setNodeHeight(newHeight);
-        onResize(id, newWidth, newHeight);
-        
-        // When text is mostly or completely deleted, reset the manual resize flag
-        if (text.length < 5) {
-          setWasManuallyResized(false);
-        }
-      } else if (!wasManuallyResized) {
-        // When not manually resized, ensure node size matches content
-        setNodeWidth(finalWidth);
-        setNodeHeight(finalHeight);
-        onResize(id, finalWidth, finalHeight);
-      }
-    }
-  };
-  
   return {
     nodeWidth,
     nodeHeight,
     wasManuallyResized,
     textareaRef,
     autoResizeNode,
-    handleManualResize,
-    finalizeSize
+    handleManualResize
   };
 };
