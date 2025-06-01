@@ -19,20 +19,13 @@ const NodeContent: React.FC<NodeContentProps> = ({
   textareaRef,
   onDoubleClick
 }) => {
-  // Adjust textarea height when entering edit mode or when labelValue changes
   useEffect(() => {
     if (isEditing && textareaRef.current) {
-      // Store current scroll position
       const scrollPosition = textareaRef.current.scrollTop;
-      
-      // Reset height before measuring
       textareaRef.current.style.height = 'auto';
       // Set height to scrollHeight to fit content (but limit to parent container)
       const parentHeight = textareaRef.current.parentElement?.clientHeight || 0;
-      const maxHeight = parentHeight - 16; // Account for padding
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, maxHeight)}px`;
-      
-      // Restore scroll position
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, parentHeight)}px`;
       textareaRef.current.scrollTop = scrollPosition;
     }
   }, [isEditing, labelValue, textareaRef]);
@@ -50,13 +43,13 @@ const NodeContent: React.FC<NodeContentProps> = ({
           className="text-xl focus:outline-none bg-transparent nodrag w-full resize-none overflow-auto"
           style={{ 
             height: 'auto',
-            maxHeight: 'calc(100% - 16px)'
+            maxHeight: 'calc(100%px)'
           }}
           autoFocus
         />
       ) : (
         <div className="text-xl text-gray-800 font-normal w-full min-h-8 whitespace-pre-wrap overflow-auto" 
-             style={{ maxHeight: 'calc(100% - 16px)' }}>
+             style={{ maxHeight: 'calc(100%px)' }}>
           {labelValue || <span className="text-gray-500 italic">Add a task!</span>}
         </div>
       )}
