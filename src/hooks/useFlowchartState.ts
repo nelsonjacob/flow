@@ -153,10 +153,10 @@ export const useFlowchartState = (initialNodes: Node[] = [], initialEdges: Edge[
   const clearChart = useCallback(() => {
     setNodes([]);
     setEdges([]);
-    setTitle('My Task Flowchart');
+    setTitle('Flowchart');
     saveToStorage(STORAGE_KEY_NODES, []);
     saveToStorage(STORAGE_KEY_EDGES, []);
-    saveToStorage(STORAGE_KEY_TITLE, 'My Task Flowchart');
+    saveToStorage(STORAGE_KEY_TITLE, 'Flowchart');
   }, [setNodes, setEdges, setTitle, saveToStorage]);
 
   return {
