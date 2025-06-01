@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { ReactFlowProvider } from 'reactflow';
 import ControlPanel from '../common/ControlPanel';
 import EditableTitle from '../common/EditableTitle';
 import TaskStats from '../common/TaskStats';
 import FlowchartEditor from './FlowchartEditor';
-import ConfirmationDialog from '../common/ConfirmationDialog'; // New component
+import ClearFlowchartModal from '../common/ClearFlowchartModal';
 import { useFlowchartState } from '../../hooks/useFlowchartState';
 
 interface FlowchartContainerProps {
@@ -45,7 +44,6 @@ export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <div className="flex-1 overflow-hidden">
-        <ReactFlowProvider>
           <FlowchartEditor
             nodes={nodes}
             edges={edges}
@@ -70,17 +68,15 @@ export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
               completedTasks={nodes.filter(node => node.data.completed).length} 
             />
           </div>
-        </ReactFlowProvider>
       </div>
-      <ConfirmationDialog
+      <ClearFlowchartModal
         isOpen={showClearConfirmation}
-        title="Clear Flowchart"
-        message="Are you sure you want to clear the entire chart?"
+        title={`Clear chart: ${title}?`}
+        message={`Are you sure you want to clear the entire chart?`}
         confirmText="Clear All"
         cancelText="Cancel"
         onConfirm={handleConfirmClear}
         onCancel={handleCancelClear}
-        variant="destructive"
       />
     </div>
   );
