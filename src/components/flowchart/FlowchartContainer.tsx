@@ -6,6 +6,7 @@ import FlowchartEditor from './FlowchartEditor';
 import ClearFlowchartModal from '../common/ClearFlowchartModal';
 import { useFlowchartState } from '../../hooks/useFlowchartState';
 import Helpguide from '../common/Helpguide';
+import { FlowchartNodeActionsProvider } from '../nodes/FlowchartNodeActionsContext';
 
 interface FlowchartContainerProps {
   title?: string;
@@ -28,6 +29,9 @@ export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
     deleteSelectedNodes,
     clearChart,
     updateTitle,
+    onLabelChange,
+    onNodeResize,
+    onToggleComplete,
   } = useFlowchartState([], [], initialTitle);
    
   useEffect(() => {
@@ -75,6 +79,13 @@ export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <div className="flex-1 overflow-hidden">
+        <FlowchartNodeActionsProvider
+          value={{
+            onLabelChange,
+            onResize: onNodeResize,
+            onToggleComplete,
+          }}
+        >
           <FlowchartEditor
             nodes={nodes}
             edges={edges}
@@ -100,6 +111,7 @@ export const FlowchartContainer: React.FC<FlowchartContainerProps> = ({
               completedTasks={nodes.filter(node => node.data.completed).length} 
             />
           </div>
+        </FlowchartNodeActionsProvider>
       </div>
       
       <ClearFlowchartModal
