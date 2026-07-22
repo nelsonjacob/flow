@@ -80,7 +80,7 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id
     if (!wasManuallyResized) autoResizeNode(newValue);
   };
 
-  const { completed, onLabelChange, onToggleComplete } = data;
+  const { completed } = data;
 
   const handleBlur = useCallback(() => {
     setIsEditing(false);
