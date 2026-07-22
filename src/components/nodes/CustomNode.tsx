@@ -7,21 +7,15 @@ import NodeContent from './NodeContent';
 import { useNodeDimensions } from '../../hooks/useNodeDimensions';
 import ColorUtils from '../../utils/ui/ColorUtils';
 import { useHandleLogic } from '../../hooks/useHandleLogic';
+import {
+  DEFAULT_NODE_HEIGHT,
+  DEFAULT_NODE_WIDTH,
+  type FlowNodeData,
+} from './nodeData';
+import { useFlowchartNodeActions } from './FlowchartNodeActionsContext';
 
-interface CustomNodeData {
-  label: string;
-  completed?: boolean;
-  completedAt?: Date;
-  width?: number;
-  height?: number;
-  isDragging?: boolean;
-  onLabelChange?: (id: string, newLabel: string) => void;
-  onResize?: (id: string, width: number, height: number) => void;
-  onToggleComplete?: (id: string, completed: boolean) => void;
-}
-
-const DEFAULT_WIDTH = 160;
-const DEFAULT_HEIGHT = 80;
+const DEFAULT_WIDTH = DEFAULT_NODE_WIDTH;
+const DEFAULT_HEIGHT = DEFAULT_NODE_HEIGHT;
 const MAX_WIDTH = 400;
 const MAX_HEIGHT = 300;
 const BUFFER_SPACE = 60;
@@ -33,10 +27,11 @@ const HANDLE_POSITIONS: { type: HandleType; position: Position; id: string }[] =
   { type: 'source', position: Position.Left, id: 'left-center' }
 ];
 
-const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, id, selected }) => {
+const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id, selected }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [labelValue, setLabelValue] = useState(data.label || '');
+  const { onLabelChange, onResize, onToggleComplete } = useFlowchartNodeActions();
   
   useEffect(() => {
     setLabelValue(data.label || '');
@@ -58,7 +53,7 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
     bufferSpace: BUFFER_SPACE,
     initialWidth: data.width,
     initialHeight: data.height,
-    onResize: data.onResize
+    onResize
   });
   
   // Extract all handle logic to custom hook
