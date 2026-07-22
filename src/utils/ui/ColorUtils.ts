@@ -1,10 +1,12 @@
 import tailwindConfig from '../../../tailwind.config.ts';
 
+type ColorValue = string | { [key: string]: ColorValue };
+
 /**
  * Utility class for accessing color values from the Tailwind theme
  */
 export class ColorUtils {
-  private static colors: Record<string, any> = tailwindConfig.theme.extend.colors;
+  private static colors = tailwindConfig.theme.extend.colors as ColorValue;
 
   /**
    * Get a color hex value by its path
@@ -13,7 +15,7 @@ export class ColorUtils {
    */
   public static getColor(colorPath: string): string | undefined {
     const parts = colorPath.split('.');
-    let current: any = this.colors;
+    let current: ColorValue = this.colors;
 
     for (const part of parts) {
       if (typeof current !== 'object' || current === null) {

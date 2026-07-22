@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import { Handle, HandleType, Position, NodeProps } from 'reactflow';
 import { NodeResizer } from '@reactflow/node-resizer';
 import '@reactflow/node-resizer/dist/style.css';
 import CompletionCheckbox from './CompletionCheckbox';
@@ -26,7 +26,7 @@ const MAX_WIDTH = 400;
 const MAX_HEIGHT = 300;
 const BUFFER_SPACE = 60;
 
-const HANDLE_POSITIONS = [
+const HANDLE_POSITIONS: { type: HandleType; position: Position; id: string }[] = [
   { type: 'source', position: Position.Top, id: 'top-center' },
   { type: 'source', position: Position.Right, id: 'right-center' },
   { type: 'source', position: Position.Bottom, id: 'bottom-center' },
@@ -85,11 +85,13 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
     if (!wasManuallyResized) autoResizeNode(newValue);
   };
 
+  const { completed, onLabelChange, onToggleComplete } = data;
+
   const handleBlur = useCallback(() => {
     setIsEditing(false);
-    if (data.onLabelChange) data.onLabelChange(id, labelValue);
+    onLabelChange?.(id, labelValue);
     finalizeSize(labelValue);
-  }, [id, labelValue, data, finalizeSize]);
+  }, [finalizeSize, id, labelValue, onLabelChange]);
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -99,10 +101,8 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
   };
 
   const handleToggleComplete = useCallback(() => {
-    if (data.onToggleComplete) {
-      data.onToggleComplete(id, !data.completed);
-    }
-  }, [data.onToggleComplete, id, data.completed]);
+    onToggleComplete?.(id, !completed);
+  }, [completed, id, onToggleComplete]);
 
   const nodeClasses = `bg-white rounded-xl shadow-md flex items-start relative
     ${isEditing 
@@ -150,7 +150,7 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
           return (
             <Handle
               key={fullHandleId}
-              type={type as any}
+              type={type}
               position={position}
               id={fullHandleId}
               isConnectable={isConnectable && !isEditing}
@@ -164,7 +164,7 @@ const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, 
         })}
 
         <CompletionCheckbox
-          completed={data.completed || false}
+          completed={completed || false}
           isNodeHovered={selected}
           onToggleComplete={handleToggleComplete}
         />
