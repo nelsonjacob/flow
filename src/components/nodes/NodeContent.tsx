@@ -20,7 +20,10 @@ export function NodeContent({
   onStartEditing,
 }: NodeContentProps) {
   return (
-    <div className="flex h-full w-full flex-col items-start p-4">
+    <div
+      className="flex h-full w-full flex-col items-start p-4"
+      onDoubleClick={onStartEditing}
+    >
       {isEditing ? (
         <textarea
           ref={textareaRef}
@@ -37,7 +40,6 @@ export function NodeContent({
         <div
           className="min-h-8 w-full overflow-auto whitespace-pre-wrap text-left text-xl font-normal text-gray-800"
           style={{ maxHeight: 'calc(100% - 16px)' }}
-          onDoubleClick={onStartEditing}
         >
           {labelValue || <span className="italic text-gray-500">Add a task!</span>}
         </div>
