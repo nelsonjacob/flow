@@ -1,42 +1,35 @@
-import React from 'react';
-
 interface TaskStatsProps {
   totalTasks: number;
   completedTasks: number;
 }
 
-const TaskStats: React.FC<TaskStatsProps> = ({ totalTasks, completedTasks }) => {
+export function TaskStats({ totalTasks, completedTasks }: TaskStatsProps) {
   const completionPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-  
+  const roundedPercentage = Math.round(completionPercentage);
+
   return (
-    <div className="fixed bottom-6 right-6 z-10">
-      <div className="
-        flex items-center gap-4 p-3 
-        bg-white/90
-        backdrop-blur-md 
-        rounded-xl 
-        border border-grays-200
-        shadow-lg
-        w-96
-      ">
-        {/* Large Progress Bar - Takes up most of the space */}
-        <div className="flex-1">
-          <div className="w-full bg-grays-200 rounded-full h-4">
-            <div 
-              className="bg-apptheme-green-flowchart h-4 rounded-full transition-all duration-500 ease-out shadow-sm"
-              style={{ width: `${completionPercentage}%` }}
-            ></div>
-          </div>
+    <div>
+      <div className="flex w-96 items-center gap-4 rounded-xl border border-grays-200 bg-white/90 p-3 shadow-lg backdrop-blur-md">
+        <div
+          role="progressbar"
+          aria-label="Task completion"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={roundedPercentage}
+          className="h-4 flex-1 rounded-full bg-grays-200"
+        >
+          <div
+            className="h-4 rounded-full bg-apptheme-green-flowchart shadow-sm transition-all duration-500 ease-out"
+            style={{ width: `${completionPercentage}%` }}
+          />
         </div>
-        
-        {/* Compact Stats */}
-        <div className="flex items-center gap-2 text-sm font-medium text-grays-700 whitespace-nowrap">
-          <span>{completedTasks}/{totalTasks}</span>
-          <span className="text-grays-500">({Math.round(completionPercentage)}%)</span>
+        <div className="flex items-center gap-2 whitespace-nowrap text-sm font-medium text-grays-700">
+          <span>
+            {completedTasks}/{totalTasks}
+          </span>
+          <span className="text-grays-500">({roundedPercentage}%)</span>
         </div>
       </div>
     </div>
   );
-};
-
-export default TaskStats;
+}

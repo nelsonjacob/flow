@@ -1,7 +1,7 @@
-import React from 'react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { useEffect, useRef } from 'react';
 
-interface ClearFlowChartModalProps {
+interface ClearFlowchartModalProps {
   isOpen: boolean;
   title: string;
   message: string;
@@ -11,49 +11,65 @@ interface ClearFlowChartModalProps {
   onCancel: () => void;
 }
 
-const ClearFlowChartModal: React.FC<ClearFlowChartModalProps> = ({
+export function ClearFlowchartModal({
   isOpen,
   title,
   message,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
   onConfirm,
-  onCancel
-}) => {
+  onCancel,
+}: ClearFlowchartModalProps) {
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (isOpen) cancelButtonRef.current?.focus();
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="relative bg-white rounded-xl shadow-2xl border border-grays-100 max-w-sm w-full">
-        <div className="p-6">
-          <div className="text-left">
-          <h3 className="relative pl-8 text-lg font-semibold text-grays-900 mb-3">
-            <ExclamationTriangleIcon className="absolute left-0 top-0 w-6 h-6 text-status-error" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="clear-flowchart-title"
+        aria-describedby="clear-flowchart-message"
+        className="relative w-full max-w-sm rounded-xl border border-grays-100 bg-white shadow-2xl"
+      >
+        <div className="p-6 text-left">
+          <h2
+            id="clear-flowchart-title"
+            className="relative mb-3 pl-8 text-lg font-semibold text-grays-900"
+          >
+            <ExclamationTriangleIcon
+              aria-hidden="true"
+              className="absolute left-0 top-0 h-6 w-6 text-status-error"
+            />
             {title}
-          </h3>
-          <p className="text-grays-600 text-sm">
+          </h2>
+          <p id="clear-flowchart-message" className="text-sm text-grays-600">
             {message}
           </p>
-          </div>
         </div>
-        
-        <div className="border-t border-grays-100 px-6 py-4 flex gap-3 justify-end">
-        <button
-          onClick={onCancel}
-          className="px-3 py-1.5 text-grays-700 bg-grays-200 hover:bg-grays-300 rounded-md transition-colors font-medium width"
-        >
-          {cancelText}
-        </button>
-        <button
-          onClick={onConfirm}
-          className="px-3 py-1.5 rounded-md transition-colors font-medium text-white bg-status-error hover:bg-red-600"
-        >
-          {confirmText}
-        </button>
+        <div className="flex justify-end gap-3 border-t border-grays-100 px-6 py-4">
+          <button
+            ref={cancelButtonRef}
+            type="button"
+            onClick={onCancel}
+            className="rounded-md bg-grays-200 px-3 py-1.5 font-medium text-grays-700 transition-colors hover:bg-grays-300"
+          >
+            {cancelText}
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="rounded-md bg-status-error px-3 py-1.5 font-medium text-white transition-colors hover:bg-red-600"
+          >
+            {confirmText}
+          </button>
         </div>
       </div>
     </div>
   );
-};
-
-export default ClearFlowChartModal;
+}

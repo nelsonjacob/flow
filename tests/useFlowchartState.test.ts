@@ -1,26 +1,30 @@
 import { act, renderHook } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
-import type { Edge, Node, ReactFlowInstance } from 'reactflow';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ReactFlowInstance } from 'reactflow';
 import { useReactFlow } from 'reactflow';
 
+import type { FlowEdge, FlowNode } from '../src/flowchart/model';
 import { useFlowchartState } from '../src/hooks/useFlowchartState';
 
-jest.mock('reactflow', () => ({
-  ...jest.requireActual<typeof import('reactflow')>('reactflow'),
-  useReactFlow: jest.fn(),
+vi.mock('reactflow', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('reactflow')>()),
+  useReactFlow: vi.fn(),
 }));
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   v4: () => 'stable-id',
 }));
 
-const mockUseReactFlow = jest.mocked(useReactFlow);
-const getViewport = jest.fn();
+const mockUseReactFlow = vi.mocked(useReactFlow);
+const screenToFlowPosition = vi.fn(({ x, y }: { x: number; y: number }) => ({
+  x: (x - 10) / 2,
+  y: (y - 20) / 2,
+}));
 
-const node = (id: string, selected = false): Node => ({
+const node = (id: string, selected = false): FlowNode => ({
   id,
   type: 'customNode',
-  data: { label: id, completed: false },
+  data: { label: id, completed: false, width: 160, height: 80 },
   position: { x: 0, y: 0 },
   selected,
 });
@@ -30,18 +34,17 @@ const edge = (
   source: string,
   target: string,
   selected = false,
-): Edge => ({ id, source, target, selected });
+): FlowEdge => ({ id, source, target, selected });
 
 describe('useFlowchartState', () => {
   beforeEach(() => {
     localStorage.clear();
     document.body.innerHTML = '';
-    getViewport.mockReturnValue({ x: 10, y: 20, zoom: 2 });
-    mockUseReactFlow.mockReturnValue({ getViewport } as unknown as ReactFlowInstance);
+    mockUseReactFlow.mockReturnValue({ screenToFlowPosition } as unknown as ReactFlowInstance);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('initializes from storage instead of supplied defaults', () => {
@@ -59,17 +62,17 @@ describe('useFlowchartState', () => {
   });
 
   it('persists serializable node data, unselected edges, and title changes', () => {
-    const callback = jest.fn();
-    const initialNode: Node = {
+    const callback = vi.fn();
+    const initialNode = {
       ...node('node-a'),
       data: {
+        ...node('node-a').data,
         label: 'Node A',
-        completed: false,
         onLabelChange: callback,
         onResize: callback,
         onToggleComplete: callback,
       },
-    };
+    } as FlowNode;
     const initialEdge = edge('edge-a', 'node-a', 'node-b', true);
 
     const { result } = renderHook(() =>
@@ -85,7 +88,8 @@ describe('useFlowchartState', () => {
       width: 160,
       height: 80,
     });
-    expect(storedEdges[0]).toMatchObject({ id: 'edge-a', selected: false });
+    expect(storedEdges[0]).toMatchObject({ id: 'edge-a' });
+    expect(storedEdges[0].selected).toBeUndefined();
 
     act(() => {
       result.current.updateTitle('Renamed flow');
@@ -130,7 +134,7 @@ describe('useFlowchartState', () => {
   it('adds a default node at the viewport-adjusted canvas position', () => {
     const flowElement = document.createElement('div');
     flowElement.className = 'react-flow';
-    flowElement.getBoundingClientRect = jest.fn(() => ({
+    flowElement.getBoundingClientRect = vi.fn(() => ({
       bottom: 500,
       height: 500,
       left: 0,
@@ -141,12 +145,10 @@ describe('useFlowchartState', () => {
       y: 0,
       toJSON: () => ({}),
     }));
-    document.body.append(flowElement);
-
     const { result } = renderHook(() => useFlowchartState());
 
     act(() => {
-      result.current.addNode();
+      result.current.addNode(flowElement.getBoundingClientRect());
     });
 
     expect(result.current.nodes).toHaveLength(1);
@@ -161,14 +163,18 @@ describe('useFlowchartState', () => {
         height: 80,
       },
     });
-    expect(result.current.nodes[0].data.onLabelChange).toBeUndefined();
-    expect(result.current.nodes[0].data.onResize).toBeUndefined();
+    expect(result.current.nodes[0].data).toEqual({
+      label: '',
+      completed: false,
+      width: 160,
+      height: 80,
+    });
     expect(result.current.onLabelChange).toEqual(expect.any(Function));
     expect(result.current.onNodeResize).toEqual(expect.any(Function));
   });
 
   it('uses the randomized fallback position when the canvas is unavailable', () => {
-    jest.spyOn(Math, 'random').mockReturnValueOnce(0.25).mockReturnValueOnce(0.75);
+    vi.spyOn(Math, 'random').mockReturnValueOnce(0.25).mockReturnValueOnce(0.75);
     const { result } = renderHook(() => useFlowchartState());
 
     act(() => {

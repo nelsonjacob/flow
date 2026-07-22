@@ -19,6 +19,8 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      complexity: ['error', 10],
+      'max-depth': ['error', 4],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },

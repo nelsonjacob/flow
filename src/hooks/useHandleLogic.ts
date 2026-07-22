@@ -1,7 +1,7 @@
-// hooks/useHandleLogic.ts
 import { useState, useMemo } from 'react';
-import { useReactFlow } from 'reactflow';
-import ColorUtils from '../utils/ui/ColorUtils';
+import { useStore } from 'reactflow';
+import { getConnectedHandleIds } from '../flowchart/handles';
+import { themeColors } from '../theme/tokens';
 
 interface UseHandleLogicProps {
   id: string;
@@ -10,7 +10,7 @@ interface UseHandleLogicProps {
   isDragging: boolean;
 }
 
-interface HandleStyle {
+export interface HandleStyle {
   width?: string;
   height?: string;
   borderRadius?: string;
@@ -32,26 +32,19 @@ interface UseHandleLogicReturn {
 }
 
 export const useHandleLogic = ({
+  id,
   isHovered, 
   isEditing, 
   isDragging 
 }: UseHandleLogicProps): UseHandleLogicReturn => {
   const [hoveredHandle, setHoveredHandle] = useState<string | null>(null);
   const [clickedHandle, setClickedHandle] = useState<string | null>(null);
-  const { getEdges } = useReactFlow();
-
-  // Get the actual edges data for dependency
-  const edges = getEdges();
+  const edges = useStore((state) => state.edges);
 
   // Memoize connected handles to react to edge changes
   const connectedHandles = useMemo(() => {
-    const connected = new Set<string>();
-    edges.forEach(edge => {
-      if (edge.sourceHandle) connected.add(edge.sourceHandle);
-      if (edge.targetHandle) connected.add(edge.targetHandle);
-    });
-    return connected;
-  }, [edges]); // Depend on the actual edges array
+    return getConnectedHandleIds(id, edges);
+  }, [edges, id]);
 
   const isHandleConnected = (handleId: string): boolean => {
     return connectedHandles.has(handleId);
@@ -85,7 +78,7 @@ export const useHandleLogic = ({
         opacity: 1,
         pointerEvents: 'auto',
         backgroundColor: 'white',
-        border: `2px solid ${ColorUtils.appthemeGreenFlowchart.default}`
+        border: `2px solid ${themeColors.flowchart.accent}`
       };
     }
 
@@ -96,7 +89,7 @@ export const useHandleLogic = ({
         pointerEvents: 'auto',
         width: '10px',
         height: '10px',
-        backgroundColor: '#6B7280',
+        backgroundColor: themeColors.handle.idle,
         border: 'none'
       };
     }
@@ -107,7 +100,7 @@ export const useHandleLogic = ({
       opacity: 1,
       pointerEvents: 'auto',
       backgroundColor: 'white',
-      border: `2px solid ${ColorUtils.appthemeGreenFlowchart.default}`
+      border: `2px solid ${themeColors.flowchart.accent}`
     };
   };
 

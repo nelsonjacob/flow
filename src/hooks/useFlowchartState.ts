@@ -1,167 +1,116 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
-  Node,
-  Edge,
-  useNodesState,
-  useEdgesState,
   addEdge,
-  Connection,
+  type Connection,
+  useEdgesState,
+  useNodesState,
+  useReactFlow,
 } from 'reactflow';
-
-import { useReactFlow } from 'reactflow';
 import { v4 as uuidv4 } from 'uuid';
-import { useConnectionConfig } from './useConnectionConfig';
-import { useLocalStorage } from './useLocalStorage';
-import { useNodeCallbacks } from './useNodeCallbacks';
-import { createDefaultNodeData, type FlowNodeData, mergeNodeData } from '../components/nodes/nodeData';
-
-// Storage keys
-const STORAGE_KEY_NODES = 'flowchart-nodes';
-const STORAGE_KEY_EDGES = 'flowchart-edges';
-const STORAGE_KEY_TITLE = 'flowchart-title';
+import {
+  isValidConnection,
+  removeSelectedElements,
+  updateNodeCompletion,
+  updateNodeLabel,
+  updateNodeSize,
+} from '../flowchart/graph';
+import { createFlowNode, type FlowEdge, type FlowNode } from '../flowchart/model';
+import { getNewNodePosition, type CanvasBounds } from '../flowchart/placement';
+import { loadFlowchart, saveFlowchart } from '../flowchart/persistence';
 
 export const useFlowchartState = (
-  initialNodes: Node<FlowNodeData>[] = [],
-  initialEdges: Edge[] = [],
-  initialTitle: string = 'My Flowchart',
+  initialNodes: FlowNode[] = [],
+  initialEdges: FlowEdge[] = [],
+  initialTitle = 'My Flowchart',
 ) => {
-  const { loadFromStorage, saveToStorage } = useLocalStorage();
-  const { isValidConnection } = useConnectionConfig();
-  const { getViewport } = useReactFlow();
-  
-  // Load initial nodes and edges
-  const loadedNodes = useMemo(
-    () =>
-      loadFromStorage<Node<FlowNodeData>[]>(STORAGE_KEY_NODES, initialNodes).map(
-        (node) => ({
-          ...node,
-          data: mergeNodeData(node.data),
-        }),
-      ),
-    [initialNodes, loadFromStorage],
+  const { screenToFlowPosition } = useReactFlow();
+  const [initialSnapshot] = useState(() =>
+    loadFlowchart(localStorage, {
+      nodes: initialNodes,
+      edges: initialEdges,
+      title: initialTitle,
+    }),
   );
-  const loadedEdges = loadFromStorage(STORAGE_KEY_EDGES, initialEdges);
-  const loadedTitle = loadFromStorage(STORAGE_KEY_TITLE, initialTitle);
-  
-  // Initialize states with the loaded data
-  const [nodes, setNodes, onNodesChange] = useNodesState<FlowNodeData>(loadedNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(loadedEdges);
-  const [title, setTitle] = useState(loadedTitle);
-  
-  // Get node callback functions
-  const { onLabelChange, onNodeResize, onToggleComplete } = useNodeCallbacks(setNodes);
-  
-  // Save nodes to localStorage when they change
-  useEffect(() => {
-    const nodesToStore = nodes.map(node => ({
-      ...node,
-      data: mergeNodeData(node.data),
-    }));
-    saveToStorage(STORAGE_KEY_NODES, nodesToStore);
-  }, [nodes, saveToStorage]);
-
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialSnapshot.nodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialSnapshot.edges);
+  const [title, setTitle] = useState(initialSnapshot.title);
 
   useEffect(() => {
-    const edgesToStore = edges.map(edge => ({
-      ...edge,
-      selected: false,
-    }));
-    saveToStorage(STORAGE_KEY_EDGES, edgesToStore);
-  }, [edges, saveToStorage]);
-  
-  // Save title to localStorage when it changes
-  useEffect(() => {
-    saveToStorage(STORAGE_KEY_TITLE, title);
-  }, [title, saveToStorage]);
-  
-  // Title update handler
+    saveFlowchart(localStorage, { nodes, edges, title });
+  }, [edges, nodes, title]);
+
   const updateTitle = useCallback((newTitle: string) => {
     setTitle(newTitle);
   }, []);
-  // Connection handling
+
   const onConnect = useCallback(
     (connection: Connection) => {
-      if (isValidConnection(connection)) {
-        const uniqueEdge = {
-          ...connection,
-          id: `edge-${uuidv4()}`,
-          animated: false,
-          style: { 
-            stroke: '#555', 
-            strokeWidth: 2 
-          }
-        };
-        
-        setEdges((eds) => addEdge(uniqueEdge, eds));
-      }
+      if (!isValidConnection(connection)) return;
+
+      setEdges((currentEdges) =>
+        addEdge(
+          {
+            ...connection,
+            id: `edge-${uuidv4()}`,
+            animated: false,
+            style: { stroke: '#555', strokeWidth: 2 },
+          },
+          currentEdges,
+        ),
+      );
     },
-    [setEdges, isValidConnection]
+    [setEdges],
   );
 
-  // Node operations
-  const addNode = useCallback(() => {
-    const viewPort = getViewport();
-
-    const flowElement = document.querySelector('.react-flow');
-    const rect = flowElement?.getBoundingClientRect();
-
-
-    let newNodePosition: { x: number; y: number } = {x: 100 + Math.random() * 100, y: 100 + Math.random() * 100 };
-
-    if (rect && viewPort) {
-      const screenCenterX = rect.width / 2;
-      const screenCenterY = rect.height * 0.4; // 40% from top instead of 50%
-      
-      // Transform screen coordinates to flow coordinates
-      const flowX = (screenCenterX - viewPort.x) / viewPort.zoom;
-      const flowY = (screenCenterY - viewPort.y) / viewPort.zoom;
-
-      newNodePosition = {
-        x: flowX,
-        y: flowY
-      };
-    }
-    
-    const newNode: Node<FlowNodeData> = {
-      id: uuidv4(),
-      type: 'customNode',
-      data: createDefaultNodeData(),
-      position: { 
-        x: newNodePosition.x,
-        y: newNodePosition.y
-      },
-    };
-    
-    setNodes((nds) => [...nds, newNode]);
-  }, [getViewport, setNodes, onLabelChange, onNodeResize]);
+  const addNode = useCallback((bounds?: CanvasBounds) => {
+    const position = getNewNodePosition(bounds, screenToFlowPosition);
+    setNodes((currentNodes) => [
+      ...currentNodes,
+      createFlowNode(uuidv4(), position),
+    ]);
+  }, [screenToFlowPosition, setNodes]);
 
   const deleteSelectedNodes = useCallback(() => {
-    const nodesToDelete = nodes.filter(node => node.selected).map(node => node.id);
-    
-    setNodes((nds) => nds.filter((node) => !node.selected));
-    
-    setEdges((eds) => eds.filter((edge) => 
-      !edge.selected && 
-      !nodesToDelete.includes(edge.source) && 
-      !nodesToDelete.includes(edge.target)
-    ));
-  }, [nodes, setNodes, setEdges]);
+    const remaining = removeSelectedElements(nodes, edges);
+    setNodes(remaining.nodes);
+    setEdges(remaining.edges);
+  }, [edges, nodes, setEdges, setNodes]);
 
   const clearChart = useCallback(() => {
     setNodes([]);
     setEdges([]);
     setTitle('Flowchart');
-    saveToStorage(STORAGE_KEY_NODES, []);
-    saveToStorage(STORAGE_KEY_EDGES, []);
-    saveToStorage(STORAGE_KEY_TITLE, 'Flowchart');
-  }, [setNodes, setEdges, setTitle, saveToStorage]);
+  }, [setEdges, setNodes]);
+
+  const onLabelChange = useCallback(
+    (nodeId: string, label: string) => {
+      setNodes((currentNodes) => updateNodeLabel(currentNodes, nodeId, label));
+    },
+    [setNodes],
+  );
+
+  const onNodeResize = useCallback(
+    (nodeId: string, width: number, height: number) => {
+      setNodes((currentNodes) =>
+        updateNodeSize(currentNodes, nodeId, width, height),
+      );
+    },
+    [setNodes],
+  );
+
+  const onToggleComplete = useCallback(
+    (nodeId: string, completed: boolean) => {
+      setNodes((currentNodes) =>
+        updateNodeCompletion(currentNodes, nodeId, completed),
+      );
+    },
+    [setNodes],
+  );
 
   return {
     nodes,
     edges,
     title,
-    setNodes,
-    setEdges,
     onNodesChange,
     onEdgesChange,
     onConnect,

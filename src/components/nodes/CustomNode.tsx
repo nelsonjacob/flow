@@ -1,18 +1,19 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Handle, HandleType, Position, NodeProps } from 'reactflow';
+import { useCallback, useEffect, useState, type KeyboardEvent } from 'react';
+import type { NodeProps } from 'reactflow';
 import { NodeResizer } from '@reactflow/node-resizer';
 import '@reactflow/node-resizer/dist/style.css';
-import CompletionCheckbox from './CompletionCheckbox';
-import NodeContent from './NodeContent';
+import { CompletionCheckbox } from './CompletionCheckbox';
+import { NodeContent } from './NodeContent';
+import { NodeHandles } from './NodeHandles';
 import { useNodeDimensions } from '../../hooks/useNodeDimensions';
-import ColorUtils from '../../utils/ui/ColorUtils';
 import { useHandleLogic } from '../../hooks/useHandleLogic';
 import {
   DEFAULT_NODE_HEIGHT,
   DEFAULT_NODE_WIDTH,
   type FlowNodeData,
-} from './nodeData';
-import { useFlowchartNodeActions } from './FlowchartNodeActionsContext';
+} from '../../flowchart/model';
+import { useFlowchartNodeActions } from './useFlowchartNodeActions';
+import { themeColors } from '../../theme/tokens';
 
 const DEFAULT_WIDTH = DEFAULT_NODE_WIDTH;
 const DEFAULT_HEIGHT = DEFAULT_NODE_HEIGHT;
@@ -20,19 +21,43 @@ const MAX_WIDTH = 400;
 const MAX_HEIGHT = 300;
 const BUFFER_SPACE = 60;
 
-const HANDLE_POSITIONS: { type: HandleType; position: Position; id: string }[] = [
-  { type: 'source', position: Position.Top, id: 'top-center' },
-  { type: 'source', position: Position.Right, id: 'right-center' },
-  { type: 'source', position: Position.Bottom, id: 'bottom-center' },
-  { type: 'source', position: Position.Left, id: 'left-center' }
-];
+const RESIZER_HANDLE_STYLE = {
+  width: 10,
+  height: 10,
+  borderRadius: 6,
+  backgroundColor: themeColors.flowchart.accent,
+  borderColor: 'white',
+};
 
-const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id, selected }) => {
+const RESIZER_LINE_STYLE = {
+  borderWidth: 2,
+  borderColor: themeColors.flowchart.accent,
+  borderStyle: 'dashed',
+};
+
+const getNodeClasses = (isEditing: boolean, selected: boolean) => {
+  const border = isEditing
+    ? 'border-2'
+    : selected
+      ? 'border-2 border-apptheme-green-flowchart'
+      : 'border border-grays-200';
+  return `relative flex items-start rounded-xl bg-white shadow-md ${border} ${
+    isEditing ? 'nodrag' : ''
+  }`;
+};
+
+export function CustomNode({
+  data,
+  dragging,
+  isConnectable,
+  id,
+  selected,
+}: NodeProps<FlowNodeData>) {
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [labelValue, setLabelValue] = useState(data.label || '');
   const { onLabelChange, onResize, onToggleComplete } = useFlowchartNodeActions();
-  
+
   useEffect(() => {
     setLabelValue(data.label || '');
   }, [data.label]);
@@ -40,11 +65,8 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id
   const {
     nodeWidth,
     nodeHeight,
-    wasManuallyResized,
     textareaRef,
-    autoResizeNode,
-    handleManualResize,
-    finalizeSize
+    handleManualResize
   } = useNodeDimensions(id, labelValue, {
     defaultWidth: DEFAULT_WIDTH,
     defaultHeight: DEFAULT_HEIGHT,
@@ -53,42 +75,38 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id
     bufferSpace: BUFFER_SPACE,
     initialWidth: data.width,
     initialHeight: data.height,
-    onResize
+    onResize,
   });
-  
-  // Extract all handle logic to custom hook
+
   const {
     getHandleStyle,
     handleHandleMouseEnter,
     handleHandleMouseLeave,
     handleHandleMouseDown,
-    handleHandleMouseUp
+    handleHandleMouseUp,
   } = useHandleLogic({
     id,
     isHovered,
     isEditing,
-    isDragging: data.isDragging || false
+    isDragging: dragging,
   });
 
-  // Node event handlers
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
   const handleDoubleClick = () => setIsEditing(true);
 
   const handleChange = (newValue: string) => {
     setLabelValue(newValue);
-    if (!wasManuallyResized) autoResizeNode(newValue);
   };
 
   const { completed } = data;
 
   const handleBlur = useCallback(() => {
     setIsEditing(false);
-    onLabelChange?.(id, labelValue);
-    finalizeSize(labelValue);
-  }, [finalizeSize, id, labelValue, onLabelChange]);
+    onLabelChange(id, labelValue);
+  }, [id, labelValue, onLabelChange]);
   
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleBlur();
@@ -96,71 +114,43 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id
   };
 
   const handleToggleComplete = useCallback(() => {
-    onToggleComplete?.(id, !completed);
+    onToggleComplete(id, !completed);
   }, [completed, id, onToggleComplete]);
 
-  const nodeClasses = `bg-white rounded-xl shadow-md flex items-start relative
-    ${isEditing 
-      ? 'border-2' 
-      : selected
-        ? 'border-2 border-apptheme-green-flowchart' 
-        : 'border border-grays-200'   
-    }
-    ${isEditing ? 'nodrag' : ''}`;
+  const nodeClasses = getNodeClasses(isEditing, selected);
 
   return (
     <>
-      <NodeResizer 
+      <NodeResizer
         minWidth={DEFAULT_WIDTH}
         minHeight={DEFAULT_HEIGHT}
         maxWidth={MAX_WIDTH}
         maxHeight={MAX_HEIGHT}
         isVisible={isEditing}
-        handleStyle={{
-          width: 10,
-          height: 10,
-          borderRadius: 6,
-          backgroundColor: ColorUtils.appthemeGreenFlowchart.default,
-          borderColor: 'white',
-        }}
-        lineStyle={{
-          borderWidth: 2,
-          borderColor: ColorUtils.appthemeGreenFlowchart.default,
-          borderStyle: 'dashed'
-        }}
-        onResize={(_, { width, height }) => {
-          handleManualResize(width, height);
-        }}
+        handleStyle={RESIZER_HANDLE_STYLE}
+        lineStyle={RESIZER_LINE_STYLE}
+        onResize={(_, { width, height }) => handleManualResize(width, height)}
       />
-      
-      <div 
+      <div
         className={nodeClasses}
         style={{ width: `${nodeWidth}px`, height: `${nodeHeight}px` }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Render handles dynamically */}
-        {HANDLE_POSITIONS.map(({ type, position, id: handleId }) => {
-          const fullHandleId = `${id}-${handleId}`;
-          return (
-            <Handle
-              key={fullHandleId}
-              type={type}
-              position={position}
-              id={fullHandleId}
-              isConnectable={isConnectable && !isEditing}
-              style={getHandleStyle(fullHandleId)}
-              onMouseEnter={() => handleHandleMouseEnter(fullHandleId)}
-              onMouseLeave={handleHandleMouseLeave}
-              onMouseDown={() => handleHandleMouseDown(fullHandleId)}
-              onMouseUp={handleHandleMouseUp}
-            />
-          );
-        })}
+        <NodeHandles
+          nodeId={id}
+          isConnectable={isConnectable}
+          isEditing={isEditing}
+          getHandleStyle={getHandleStyle}
+          onMouseEnter={handleHandleMouseEnter}
+          onMouseLeave={handleHandleMouseLeave}
+          onMouseDown={handleHandleMouseDown}
+          onMouseUp={handleHandleMouseUp}
+        />
 
         <CompletionCheckbox
-          completed={completed || false}
-          isNodeHovered={selected}
+          completed={completed}
+          isNodeHovered={isHovered || selected}
           onToggleComplete={handleToggleComplete}
         />
         <NodeContent
@@ -170,11 +160,9 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           textareaRef={textareaRef}
-          onDoubleClick={handleDoubleClick}
+          onStartEditing={handleDoubleClick}
         />
       </div>
     </>
   );
-};
-
-export default CustomNode;
+}
