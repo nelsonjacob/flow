@@ -12,7 +12,7 @@ import {
   DEFAULT_NODE_WIDTH,
   type FlowNodeData,
 } from './nodeData';
-import { useFlowchartNodeActions } from './FlowchartNodeActionsContext';
+import { useFlowchartNodeActions } from './useFlowchartNodeActions';
 
 const DEFAULT_WIDTH = DEFAULT_NODE_WIDTH;
 const DEFAULT_HEIGHT = DEFAULT_NODE_HEIGHT;

@@ -6,7 +6,7 @@ import FlowchartEditor from './FlowchartEditor';
 import ClearFlowchartModal from '../common/ClearFlowchartModal';
 import { useFlowchartState } from '../../hooks/useFlowchartState';
 import Helpguide from '../common/Helpguide';
-import { FlowchartNodeActionsProvider } from '../nodes/FlowchartNodeActionsContext';
+import { FlowchartNodeActionsProvider } from '../nodes/FlowchartNodeActionsProvider';
 
 interface FlowchartContainerProps {
   title?: string;

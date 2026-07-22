@@ -1,21 +1,21 @@
 import { act, renderHook } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Edge, Node, ReactFlowInstance } from 'reactflow';
 import { useReactFlow } from 'reactflow';
 
 import { useFlowchartState } from '../src/hooks/useFlowchartState';
 
-jest.mock('reactflow', () => ({
-  ...jest.requireActual<typeof import('reactflow')>('reactflow'),
-  useReactFlow: jest.fn(),
+vi.mock('reactflow', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('reactflow')>()),
+  useReactFlow: vi.fn(),
 }));
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   v4: () => 'stable-id',
 }));
 
-const mockUseReactFlow = jest.mocked(useReactFlow);
-const getViewport = jest.fn();
+const mockUseReactFlow = vi.mocked(useReactFlow);
+const getViewport = vi.fn();
 
 const node = (id: string, selected = false): Node => ({
   id,
@@ -41,7 +41,7 @@ describe('useFlowchartState', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('initializes from storage instead of supplied defaults', () => {
@@ -59,7 +59,7 @@ describe('useFlowchartState', () => {
   });
 
   it('persists serializable node data, unselected edges, and title changes', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     const initialNode: Node = {
       ...node('node-a'),
       data: {
@@ -130,7 +130,7 @@ describe('useFlowchartState', () => {
   it('adds a default node at the viewport-adjusted canvas position', () => {
     const flowElement = document.createElement('div');
     flowElement.className = 'react-flow';
-    flowElement.getBoundingClientRect = jest.fn(() => ({
+    flowElement.getBoundingClientRect = vi.fn(() => ({
       bottom: 500,
       height: 500,
       left: 0,
@@ -168,7 +168,7 @@ describe('useFlowchartState', () => {
   });
 
   it('uses the randomized fallback position when the canvas is unavailable', () => {
-    jest.spyOn(Math, 'random').mockReturnValueOnce(0.25).mockReturnValueOnce(0.75);
+    vi.spyOn(Math, 'random').mockReturnValueOnce(0.25).mockReturnValueOnce(0.75);
     const { result } = renderHook(() => useFlowchartState());
 
     act(() => {

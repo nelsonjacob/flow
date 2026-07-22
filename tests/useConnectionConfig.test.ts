@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 import type { Connection } from 'reactflow';
 
 import { useConnectionConfig } from '../src/hooks/useConnectionConfig';

@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useLocalStorage } from '../src/hooks/useLocalStorage';
 
@@ -9,7 +9,7 @@ describe('useLocalStorage', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('loads stored JSON and falls back when a key is missing', () => {
@@ -25,7 +25,7 @@ describe('useLocalStorage', () => {
 
   it('falls back when stored JSON is malformed', () => {
     localStorage.setItem('broken-value', '{not-json');
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     const { result } = renderHook(() => useLocalStorage());
 

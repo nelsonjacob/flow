@@ -133,7 +133,7 @@ export const useFlowchartState = (
     };
     
     setNodes((nds) => [...nds, newNode]);
-  }, [getViewport, setNodes, onLabelChange, onNodeResize]);
+  }, [getViewport, setNodes]);
 
   const deleteSelectedNodes = useCallback(() => {
     const nodesToDelete = nodes.filter(node => node.selected).map(node => node.id);
