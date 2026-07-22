@@ -2,7 +2,6 @@ import React, { useState, useCallback, useMemo } from 'react';
 import ReactFlow, {
   Controls,
   Background,
-  Node,
   Edge,
   OnNodesChange,
   OnEdgesChange,
@@ -12,10 +11,11 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import CustomNode from '../nodes/CustomNode';
 import ColorUtils from '../../utils/ui/ColorUtils';
+import type { FlowEdge, FlowNode } from '../../flowchart/model';
 
 interface FlowchartEditorProps {
-  nodes: Node[];
-  edges: Edge[];
+  nodes: FlowNode[];
+  edges: FlowEdge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;

@@ -1,8 +1,9 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Edge, Node, ReactFlowInstance } from 'reactflow';
+import type { ReactFlowInstance } from 'reactflow';
 import { useReactFlow } from 'reactflow';
 
+import type { FlowEdge, FlowNode } from '../src/flowchart/model';
 import { useFlowchartState } from '../src/hooks/useFlowchartState';
 
 vi.mock('reactflow', async (importOriginal) => ({
@@ -17,10 +18,10 @@ vi.mock('uuid', () => ({
 const mockUseReactFlow = vi.mocked(useReactFlow);
 const getViewport = vi.fn();
 
-const node = (id: string, selected = false): Node => ({
+const node = (id: string, selected = false): FlowNode => ({
   id,
   type: 'customNode',
-  data: { label: id, completed: false },
+  data: { label: id, completed: false, width: 160, height: 80 },
   position: { x: 0, y: 0 },
   selected,
 });
@@ -30,7 +31,7 @@ const edge = (
   source: string,
   target: string,
   selected = false,
-): Edge => ({ id, source, target, selected });
+): FlowEdge => ({ id, source, target, selected });
 
 describe('useFlowchartState', () => {
   beforeEach(() => {
@@ -60,16 +61,16 @@ describe('useFlowchartState', () => {
 
   it('persists serializable node data, unselected edges, and title changes', () => {
     const callback = vi.fn();
-    const initialNode: Node = {
+    const initialNode = {
       ...node('node-a'),
       data: {
+        ...node('node-a').data,
         label: 'Node A',
-        completed: false,
         onLabelChange: callback,
         onResize: callback,
         onToggleComplete: callback,
       },
-    };
+    } as FlowNode;
     const initialEdge = edge('edge-a', 'node-a', 'node-b', true);
 
     const { result } = renderHook(() =>
@@ -85,7 +86,8 @@ describe('useFlowchartState', () => {
       width: 160,
       height: 80,
     });
-    expect(storedEdges[0]).toMatchObject({ id: 'edge-a', selected: false });
+    expect(storedEdges[0]).toMatchObject({ id: 'edge-a' });
+    expect(storedEdges[0].selected).toBeUndefined();
 
     act(() => {
       result.current.updateTitle('Renamed flow');
@@ -161,8 +163,12 @@ describe('useFlowchartState', () => {
         height: 80,
       },
     });
-    expect(result.current.nodes[0].data.onLabelChange).toBeUndefined();
-    expect(result.current.nodes[0].data.onResize).toBeUndefined();
+    expect(result.current.nodes[0].data).toEqual({
+      label: '',
+      completed: false,
+      width: 160,
+      height: 80,
+    });
     expect(result.current.onLabelChange).toEqual(expect.any(Function));
     expect(result.current.onNodeResize).toEqual(expect.any(Function));
   });

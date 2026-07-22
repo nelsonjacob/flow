@@ -11,7 +11,7 @@ import {
   DEFAULT_NODE_HEIGHT,
   DEFAULT_NODE_WIDTH,
   type FlowNodeData,
-} from './nodeData';
+} from '../../flowchart/model';
 import { useFlowchartNodeActions } from './useFlowchartNodeActions';
 
 const DEFAULT_WIDTH = DEFAULT_NODE_WIDTH;
@@ -27,7 +27,13 @@ const HANDLE_POSITIONS: { type: HandleType; position: Position; id: string }[] =
   { type: 'source', position: Position.Left, id: 'left-center' }
 ];
 
-const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id, selected }) => {
+const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({
+  data,
+  dragging,
+  isConnectable,
+  id,
+  selected,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [labelValue, setLabelValue] = useState(data.label || '');
@@ -67,7 +73,7 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id
     id,
     isHovered,
     isEditing,
-    isDragging: data.isDragging || false
+    isDragging: dragging
   });
 
   // Node event handlers
