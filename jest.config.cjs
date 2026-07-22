@@ -7,7 +7,7 @@ module.exports = {
     '^.+\\.tsx?$': [
       'ts-jest',
       {
-        diagnostics: false,
+        diagnostics: true,
         tsconfig: {
           esModuleInterop: true,
           isolatedModules: true,
