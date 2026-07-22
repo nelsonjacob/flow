@@ -106,7 +106,7 @@ export const useFlowchartState = (
     const rect = flowElement?.getBoundingClientRect();
 
 
-    var newNodePosition: { x: number; y: number } = {x: 100 + Math.random() * 100, y: 100 + Math.random() * 100 };
+    let newNodePosition: { x: number; y: number } = {x: 100 + Math.random() * 100, y: 100 + Math.random() * 100 };
 
     if (rect && viewPort) {
       const screenCenterX = rect.width / 2;
@@ -133,7 +133,7 @@ export const useFlowchartState = (
     };
     
     setNodes((nds) => [...nds, newNode]);
-  }, [getViewport, setNodes]);
+  }, [getViewport, setNodes, onLabelChange, onNodeResize]);
 
   const deleteSelectedNodes = useCallback(() => {
     const nodesToDelete = nodes.filter(node => node.selected).map(node => node.id);

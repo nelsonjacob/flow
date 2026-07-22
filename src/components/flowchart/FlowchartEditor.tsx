@@ -11,7 +11,6 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomNode from '../nodes/CustomNode';
-import { useConnectionConfig } from '../../hooks/useConnectionConfig';
 import ColorUtils from '../../utils/ui/ColorUtils';
 
 interface FlowchartEditorProps {
@@ -33,7 +32,6 @@ export const FlowchartEditor: React.FC<FlowchartEditorProps> = ({
   onEdgesChange,
   onConnect,
 }) => {
-  const {} = useConnectionConfig();
   const [hoveredEdge, setHoveredEdge] = useState<string | null>(null);
   const [clickedEdge, setClickedEdge] = useState<string | null>(null);
 

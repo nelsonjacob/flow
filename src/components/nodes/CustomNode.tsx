@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import { Handle, HandleType, Position, NodeProps } from 'reactflow';
 import { NodeResizer } from '@reactflow/node-resizer';
 import '@reactflow/node-resizer/dist/style.css';
 import CompletionCheckbox from './CompletionCheckbox';
@@ -20,7 +20,7 @@ const MAX_WIDTH = 400;
 const MAX_HEIGHT = 300;
 const BUFFER_SPACE = 60;
 
-const HANDLE_POSITIONS = [
+const HANDLE_POSITIONS: { type: HandleType; position: Position; id: string }[] = [
   { type: 'source', position: Position.Top, id: 'top-center' },
   { type: 'source', position: Position.Right, id: 'right-center' },
   { type: 'source', position: Position.Bottom, id: 'bottom-center' },
@@ -80,9 +80,11 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id
     if (!wasManuallyResized) autoResizeNode(newValue);
   };
 
+  const { completed } = data;
+
   const handleBlur = useCallback(() => {
     setIsEditing(false);
-    onLabelChange(id, labelValue);
+    onLabelChange?.(id, labelValue);
     finalizeSize(labelValue);
   }, [finalizeSize, id, labelValue, onLabelChange]);
   
@@ -94,8 +96,8 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id
   };
 
   const handleToggleComplete = useCallback(() => {
-    onToggleComplete(id, !data.completed);
-  }, [data.completed, id, onToggleComplete]);
+    onToggleComplete?.(id, !completed);
+  }, [completed, id, onToggleComplete]);
 
   const nodeClasses = `bg-white rounded-xl shadow-md flex items-start relative
     ${isEditing 
@@ -143,7 +145,7 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id
           return (
             <Handle
               key={fullHandleId}
-              type={type as any}
+              type={type}
               position={position}
               id={fullHandleId}
               isConnectable={isConnectable && !isEditing}
@@ -157,7 +159,7 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({ data, isConnectable, id
         })}
 
         <CompletionCheckbox
-          completed={data.completed || false}
+          completed={completed || false}
           isNodeHovered={selected}
           onToggleComplete={handleToggleComplete}
         />

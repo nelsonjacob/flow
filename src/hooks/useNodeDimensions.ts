@@ -44,7 +44,7 @@ export const useNodeDimensions = (id: string, text: string, options: NodeDimensi
     if (initialHeight && initialHeight !== nodeHeight) {
       setNodeHeight(Math.max(initialHeight, defaultHeight));
     }
-  }, [initialWidth, initialHeight]);
+  }, [defaultHeight, defaultWidth, initialHeight, initialWidth, nodeHeight, nodeWidth]);
   
   // Auto-resize based on content
   const autoResizeNode = (text: string) => {
