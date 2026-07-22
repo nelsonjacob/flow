@@ -1,7 +1,10 @@
-import React from 'react';
-import { PlusIcon, TrashIcon, XMarkIcon, QuestionMarkCircleIcon} from '@heroicons/react/24/outline';
-import ControlButton from './ControlButton';
-
+import {
+  PlusIcon,
+  QuestionMarkCircleIcon,
+  TrashIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
+import { ControlButton } from './ControlButton';
 
 interface ControlPanelProps {
   onAddNode: () => void;
@@ -10,54 +13,41 @@ interface ControlPanelProps {
   onHelpGuide: () => void;
 }
 
-/**
- * Control panel for flowchart operations like adding and deleting nodes
- */
-const ControlPanel: React.FC<ControlPanelProps> = ({
+export function ControlPanel({
   onAddNode,
   onDeleteNode,
   onClearChart,
-  onHelpGuide
-}) => {
+  onHelpGuide,
+}: ControlPanelProps) {
   return (
-    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-10">
-      <div className="
-        flex items-center gap-2 p-3 
-        bg-white/90
-        backdrop-blur-md 
-        rounded-xl 
-        border border-grays-200
-        shadow-lg
-      ">
+    <div className="fixed bottom-6 left-1/2 z-10 -translate-x-1/2">
+      <div className="flex items-center gap-2 rounded-xl border border-grays-200 bg-white/90 p-3 shadow-lg backdrop-blur-md">
         <ControlButton
+          label="Add task"
           onClick={onAddNode}
-          icon={<PlusIcon className="w-5 h-5" />}
-          variant='default'
+          icon={<PlusIcon aria-hidden="true" className="h-5 w-5" />}
         />
-        <div className="w-px h-7 bg-grays-300 mx-1"></div>
-        
+        <div aria-hidden="true" className="mx-1 h-7 w-px bg-grays-300" />
         <ControlButton
+          label="Delete selected tasks"
           onClick={onDeleteNode}
-          icon={<XMarkIcon className="w-5 h-5" />}
-          variant='remove'
+          icon={<XMarkIcon aria-hidden="true" className="h-5 w-5" />}
+          variant="remove"
         />
-
         <ControlButton
+          label="Clear chart"
           onClick={onClearChart}
-          icon={<TrashIcon className="w-5 h-5" />}
-          variant='remove'
+          icon={<TrashIcon aria-hidden="true" className="h-5 w-5" />}
+          variant="remove"
         />
-
-        <div className="w-px h-7 bg-grays-300 mx-1"></div>
-
+        <div aria-hidden="true" className="mx-1 h-7 w-px bg-grays-300" />
         <ControlButton
+          label="Open help"
           onClick={onHelpGuide}
-          icon={<QuestionMarkCircleIcon className="w-5 h-5" />}
-          variant='help'
+          icon={<QuestionMarkCircleIcon aria-hidden="true" className="h-5 w-5" />}
+          variant="help"
         />
       </div>
     </div>
   );
-};
-
-export default ControlPanel;
+}

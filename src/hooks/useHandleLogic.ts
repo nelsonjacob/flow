@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useStore } from 'reactflow';
-import ColorUtils from '../utils/ui/ColorUtils';
 import { getConnectedHandleIds } from '../flowchart/handles';
+import { themeColors } from '../theme/tokens';
 
 interface UseHandleLogicProps {
   id: string;
@@ -10,7 +10,7 @@ interface UseHandleLogicProps {
   isDragging: boolean;
 }
 
-interface HandleStyle {
+export interface HandleStyle {
   width?: string;
   height?: string;
   borderRadius?: string;
@@ -78,7 +78,7 @@ export const useHandleLogic = ({
         opacity: 1,
         pointerEvents: 'auto',
         backgroundColor: 'white',
-        border: `2px solid ${ColorUtils.appthemeGreenFlowchart.default}`
+        border: `2px solid ${themeColors.flowchart.accent}`
       };
     }
 
@@ -89,7 +89,7 @@ export const useHandleLogic = ({
         pointerEvents: 'auto',
         width: '10px',
         height: '10px',
-        backgroundColor: '#6B7280',
+        backgroundColor: themeColors.handle.idle,
         border: 'none'
       };
     }
@@ -100,7 +100,7 @@ export const useHandleLogic = ({
       opacity: 1,
       pointerEvents: 'auto',
       backgroundColor: 'white',
-      border: `2px solid ${ColorUtils.appthemeGreenFlowchart.default}`
+      border: `2px solid ${themeColors.flowchart.accent}`
     };
   };
 

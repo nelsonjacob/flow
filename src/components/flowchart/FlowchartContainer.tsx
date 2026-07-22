@@ -1,19 +1,19 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import ClearFlowchartModal from '../common/ClearFlowchartModal';
-import ControlPanel from '../common/ControlPanel';
-import EditableTitle from '../common/EditableTitle';
-import Helpguide from '../common/Helpguide';
-import TaskStats from '../common/TaskStats';
+import { ClearFlowchartModal } from '../common/ClearFlowchartModal';
+import { ControlPanel } from '../common/ControlPanel';
+import { EditableTitle } from '../common/EditableTitle';
+import { FlowchartHelpDialog } from '../common/FlowchartHelpDialog';
+import { TaskStats } from '../common/TaskStats';
 import { FlowchartNodeActionsProvider } from '../nodes/FlowchartNodeActionsProvider';
 import { useFlowchartState } from '../../hooks/useFlowchartState';
 import { useFlowchartShortcuts } from '../../hooks/useFlowchartShortcuts';
-import FlowchartEditor from './FlowchartEditor';
+import { FlowchartEditor } from './FlowchartEditor';
 
 interface FlowchartContainerProps {
   title?: string;
 }
 
-export const FlowchartContainer = ({ title: initialTitle }: FlowchartContainerProps) => {
+export function FlowchartContainer({ title: initialTitle }: FlowchartContainerProps) {
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
   const [showHelpGuide, setShowHelpGuide] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -107,9 +107,7 @@ export const FlowchartContainer = ({ title: initialTitle }: FlowchartContainerPr
         onCancel={closeClearDialog}
       />
 
-      <Helpguide isOpen={showHelpGuide} onClose={closeHelpDialog} />
+      <FlowchartHelpDialog isOpen={showHelpGuide} onClose={closeHelpDialog} />
     </main>
   );
-};
-
-export default FlowchartContainer;
+}

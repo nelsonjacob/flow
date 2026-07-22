@@ -1,49 +1,47 @@
-import React from 'react';
+import type { KeyboardEvent, RefObject } from 'react';
 
 interface NodeContentProps {
   isEditing: boolean;
   labelValue: string;
   onLabelChange: (value: string) => void;
   onBlur: () => void;
-  onKeyDown: (e: React.KeyboardEvent) => void;
-  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
-  onDoubleClick: () => void;
+  onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
+  textareaRef: RefObject<HTMLTextAreaElement | null>;
+  onStartEditing: () => void;
 }
 
-const NodeContent: React.FC<NodeContentProps> = ({
+export function NodeContent({
   isEditing,
   labelValue,
   onLabelChange,
   onBlur,
   onKeyDown,
   textareaRef,
-  onDoubleClick
-}) => {
+  onStartEditing,
+}: NodeContentProps) {
   return (
-    <div className="pl-4 pt-4 pr-4 w-full h-full flex flex-col items-start" onDoubleClick={onDoubleClick}>
+    <div className="flex h-full w-full flex-col items-start p-4">
       {isEditing ? (
         <textarea
           ref={textareaRef}
           value={labelValue}
-          onChange={(e) => onLabelChange(e.target.value)}
+          onChange={(event) => onLabelChange(event.target.value)}
           onBlur={onBlur}
           onKeyDown={onKeyDown}
-          placeholder=""
-          className="text-xl focus:outline-none bg-transparent nodrag w-full resize-none overflow-auto"
-          style={{ 
-            height: 'auto',
-            maxHeight: 'calc(100% - 16px)'
-          }}
+          aria-label="Task label"
+          className="nodrag w-full resize-none overflow-auto bg-transparent text-xl focus:outline-none"
+          style={{ height: 'auto', maxHeight: 'calc(100% - 16px)' }}
           autoFocus
         />
       ) : (
-        <div className="text-xl text-gray-800 font-normal w-full min-h-8 whitespace-pre-wrap overflow-auto" 
-             style={{ maxHeight: 'calc(100% - 16px)' }}>
-          {labelValue || <span className="text-gray-500 italic">Add a task!</span>}
+        <div
+          className="min-h-8 w-full overflow-auto whitespace-pre-wrap text-left text-xl font-normal text-gray-800"
+          style={{ maxHeight: 'calc(100% - 16px)' }}
+          onDoubleClick={onStartEditing}
+        >
+          {labelValue || <span className="italic text-gray-500">Add a task!</span>}
         </div>
       )}
     </div>
   );
-};
-
-export default NodeContent;
+}

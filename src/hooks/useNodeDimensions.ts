@@ -25,6 +25,16 @@ interface NodeDimensionsOptions {
   maxHeight?: number;
 }
 
+const shouldApplyContentSize = (
+  isDeleting: boolean,
+  wasManuallyResized: boolean,
+  grew: boolean,
+  shrank: boolean,
+) => {
+  if (isDeleting) return shrank;
+  return !wasManuallyResized && grew;
+};
+
 export const useNodeDimensions = (
   id: string,
   text: string,
@@ -97,7 +107,7 @@ export const useNodeDimensions = (
     const shrank =
       measured.width < dimensions.width || measured.height < dimensions.height;
 
-    if ((isDeleting && shrank) || (!isDeleting && !wasManuallyResized && grew)) {
+    if (shouldApplyContentSize(isDeleting, wasManuallyResized, grew, shrank)) {
       commitDimensions(measured);
     }
     if (isDeleting && text.length < 5) setWasManuallyResized(false);

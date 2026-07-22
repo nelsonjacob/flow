@@ -6,7 +6,7 @@ import ReactFlow, {
   type OnEdgesChange,
   type OnNodesChange,
 } from 'reactflow';
-import CustomNode from '../nodes/CustomNode';
+import { CustomNode } from '../nodes/CustomNode';
 import type { FlowEdge, FlowNode } from '../../flowchart/model';
 import {
   BASE_EDGE_STYLE,
@@ -22,14 +22,17 @@ interface FlowchartEditorProps {
 }
 
 const nodeTypes = { customNode: CustomNode };
+const defaultEdgeOptions = { type: 'default' as const, style: BASE_EDGE_STYLE };
+const fitViewOptions = { padding: 0.2, maxZoom: 1.5 };
+const defaultViewport = { x: 0, y: 0, zoom: 0.8 };
 
-export const FlowchartEditor = ({
+export function FlowchartEditor({
   nodes,
   edges,
   onNodesChange,
   onEdgesChange,
   onConnect,
-}: FlowchartEditorProps) => {
+}: FlowchartEditorProps) {
   const edgeInteractions = useEdgeInteractions(edges, onEdgesChange);
 
   return (
@@ -46,9 +49,9 @@ export const FlowchartEditor = ({
       onPaneClick={edgeInteractions.onPaneClick}
       nodeTypes={nodeTypes}
       connectionMode={ConnectionMode.Loose}
-      defaultEdgeOptions={{ type: 'default', style: BASE_EDGE_STYLE }}
-      fitViewOptions={{ padding: 0.2, maxZoom: 1.5 }}
-      defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
+      defaultEdgeOptions={defaultEdgeOptions}
+      fitViewOptions={fitViewOptions}
+      defaultViewport={defaultViewport}
       connectOnClick={false}
       deleteKeyCode={null}
     >
@@ -56,6 +59,4 @@ export const FlowchartEditor = ({
       <Controls />
     </ReactFlow>
   );
-};
-
-export default FlowchartEditor;
+}

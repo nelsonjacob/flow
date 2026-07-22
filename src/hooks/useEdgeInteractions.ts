@@ -1,23 +1,23 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, type MouseEvent } from 'react';
 import type { Edge, OnEdgesChange } from 'reactflow';
-import ColorUtils from '../utils/ui/ColorUtils';
 import type { FlowEdge } from '../flowchart/model';
+import { themeColors } from '../theme/tokens';
 
 export const BASE_EDGE_STYLE = {
   strokeWidth: 2,
-  stroke: ColorUtils.flowchart.line.default,
+  stroke: themeColors.flowchart.edge,
   transition: 'all 0.2s ease-in-out',
 };
 
 const HOVERED_EDGE_STYLE = {
   ...BASE_EDGE_STYLE,
-  stroke: ColorUtils.flowchart.line.hover,
+  stroke: themeColors.flowchart.edgeHover,
   strokeDasharray: '8,4',
 };
 
 const CLICKED_EDGE_STYLE = {
   ...BASE_EDGE_STYLE,
-  stroke: ColorUtils.status.error,
+  stroke: themeColors.status.error,
   strokeDasharray: '8,4',
 };
 
@@ -52,11 +52,11 @@ export const useEdgeInteractions = (
     [clickedEdge, edges, hoveredEdge],
   );
 
-  const onEdgeMouseEnter = useCallback((_: React.MouseEvent, edge: Edge) => {
+  const onEdgeMouseEnter = useCallback((_: MouseEvent, edge: Edge) => {
     setHoveredEdge(edge.id);
   }, []);
   const onEdgeMouseLeave = useCallback(() => setHoveredEdge(null), []);
-  const onEdgeClick = useCallback((_: React.MouseEvent, edge: Edge) => {
+  const onEdgeClick = useCallback((_: MouseEvent, edge: Edge) => {
     setClickedEdge((current) => (current === edge.id ? null : edge.id));
   }, []);
   const onDeleteEdge = useCallback(
@@ -67,7 +67,7 @@ export const useEdgeInteractions = (
     [onEdgesChange],
   );
   const onEdgeDoubleClick = useCallback(
-    (_: React.MouseEvent, edge: Edge) => {
+    (_: MouseEvent, edge: Edge) => {
       if (clickedEdge === edge.id) onDeleteEdge(edge.id);
     },
     [clickedEdge, onDeleteEdge],
