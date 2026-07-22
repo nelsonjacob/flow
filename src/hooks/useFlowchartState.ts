@@ -15,6 +15,7 @@ import {
   updateNodeSize,
 } from '../flowchart/graph';
 import { createFlowNode, type FlowEdge, type FlowNode } from '../flowchart/model';
+import { getNewNodePosition, type CanvasBounds } from '../flowchart/placement';
 import { loadFlowchart, saveFlowchart } from '../flowchart/persistence';
 
 export const useFlowchartState = (
@@ -22,7 +23,7 @@ export const useFlowchartState = (
   initialEdges: FlowEdge[] = [],
   initialTitle = 'My Flowchart',
 ) => {
-  const { getViewport } = useReactFlow();
+  const { screenToFlowPosition } = useReactFlow();
   const [initialSnapshot] = useState(() =>
     loadFlowchart(localStorage, {
       nodes: initialNodes,
@@ -61,27 +62,13 @@ export const useFlowchartState = (
     [setEdges],
   );
 
-  const addNode = useCallback(() => {
-    const viewport = getViewport();
-    const flowElement = document.querySelector('.react-flow');
-    const rect = flowElement?.getBoundingClientRect();
-    let position = {
-      x: 100 + Math.random() * 100,
-      y: 100 + Math.random() * 100,
-    };
-
-    if (rect) {
-      position = {
-        x: (rect.width / 2 - viewport.x) / viewport.zoom,
-        y: (rect.height * 0.4 - viewport.y) / viewport.zoom,
-      };
-    }
-
+  const addNode = useCallback((bounds?: CanvasBounds) => {
+    const position = getNewNodePosition(bounds, screenToFlowPosition);
     setNodes((currentNodes) => [
       ...currentNodes,
       createFlowNode(uuidv4(), position),
     ]);
-  }, [getViewport, setNodes]);
+  }, [screenToFlowPosition, setNodes]);
 
   const deleteSelectedNodes = useCallback(() => {
     const remaining = removeSelectedElements(nodes, edges);

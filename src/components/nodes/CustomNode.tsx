@@ -46,11 +46,8 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({
   const {
     nodeWidth,
     nodeHeight,
-    wasManuallyResized,
     textareaRef,
-    autoResizeNode,
-    handleManualResize,
-    finalizeSize
+    handleManualResize
   } = useNodeDimensions(id, labelValue, {
     defaultWidth: DEFAULT_WIDTH,
     defaultHeight: DEFAULT_HEIGHT,
@@ -83,7 +80,6 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({
 
   const handleChange = (newValue: string) => {
     setLabelValue(newValue);
-    if (!wasManuallyResized) autoResizeNode(newValue);
   };
 
   const { completed } = data;
@@ -91,8 +87,7 @@ const CustomNode: React.FC<NodeProps<FlowNodeData>> = ({
   const handleBlur = useCallback(() => {
     setIsEditing(false);
     onLabelChange?.(id, labelValue);
-    finalizeSize(labelValue);
-  }, [finalizeSize, id, labelValue, onLabelChange]);
+  }, [id, labelValue, onLabelChange]);
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {

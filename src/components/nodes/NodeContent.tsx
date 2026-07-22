@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 interface NodeContentProps {
   isEditing: boolean;
@@ -19,24 +19,6 @@ const NodeContent: React.FC<NodeContentProps> = ({
   textareaRef,
   onDoubleClick
 }) => {
-  // Adjust textarea height when entering edit mode or when labelValue changes
-  useEffect(() => {
-    if (isEditing && textareaRef.current) {
-      // Store current scroll position
-      const scrollPosition = textareaRef.current.scrollTop;
-      
-      // Reset height before measuring
-      textareaRef.current.style.height = 'auto';
-      // Set height to scrollHeight to fit content (but limit to parent container)
-      const parentHeight = textareaRef.current.parentElement?.clientHeight || 0;
-      const maxHeight = parentHeight - 16; // Account for padding
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, maxHeight)}px`;
-      
-      // Restore scroll position
-      textareaRef.current.scrollTop = scrollPosition;
-    }
-  }, [isEditing, labelValue, textareaRef]);
-
   return (
     <div className="pl-4 pt-4 pr-4 w-full h-full flex flex-col items-start" onDoubleClick={onDoubleClick}>
       {isEditing ? (

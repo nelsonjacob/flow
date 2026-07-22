@@ -16,7 +16,10 @@ vi.mock('uuid', () => ({
 }));
 
 const mockUseReactFlow = vi.mocked(useReactFlow);
-const getViewport = vi.fn();
+const screenToFlowPosition = vi.fn(({ x, y }: { x: number; y: number }) => ({
+  x: (x - 10) / 2,
+  y: (y - 20) / 2,
+}));
 
 const node = (id: string, selected = false): FlowNode => ({
   id,
@@ -37,8 +40,7 @@ describe('useFlowchartState', () => {
   beforeEach(() => {
     localStorage.clear();
     document.body.innerHTML = '';
-    getViewport.mockReturnValue({ x: 10, y: 20, zoom: 2 });
-    mockUseReactFlow.mockReturnValue({ getViewport } as unknown as ReactFlowInstance);
+    mockUseReactFlow.mockReturnValue({ screenToFlowPosition } as unknown as ReactFlowInstance);
   });
 
   afterEach(() => {
@@ -143,12 +145,10 @@ describe('useFlowchartState', () => {
       y: 0,
       toJSON: () => ({}),
     }));
-    document.body.append(flowElement);
-
     const { result } = renderHook(() => useFlowchartState());
 
     act(() => {
-      result.current.addNode();
+      result.current.addNode(flowElement.getBoundingClientRect());
     });
 
     expect(result.current.nodes).toHaveLength(1);
